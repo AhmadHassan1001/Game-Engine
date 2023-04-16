@@ -1,2 +1,6 @@
 *.class
 *.log
+
+# for java script
+
+node_modules/
