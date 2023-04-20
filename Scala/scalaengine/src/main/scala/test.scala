@@ -1,4 +1,4 @@
-import java.awt.{Color, Graphics}
+import java.awt.{Color, Graphics, Graphics2D, BasicStroke}
 import javax.swing.{JFrame, JPanel}
 
 object BoardDrawer extends App {
@@ -8,6 +8,8 @@ object BoardDrawer extends App {
       override def paintComponent(g: Graphics): Unit = {
         g.setColor(bgColor)
         g.fillRect(0, 0, getWidth, getHeight)
+        val g2d = g.asInstanceOf[Graphics2D] // cast to Graphics2D
+        g2d.setStroke(new BasicStroke(5)) // set line width to 5
         val tileSize = Math.min(getWidth / cols, getHeight / rows)
         for {
           row <- 0 until rows
@@ -18,7 +20,9 @@ object BoardDrawer extends App {
           val tileColor = if ((row + col) % 2 == 0) color1 else color2
           g.setColor(tileColor)
           shape match {
-            case "line" => g.drawLine(x, y, x + tileSize, y + tileSize)
+            case "line" => {
+                            g.drawLine(x+tileSize, 0, x+tileSize , rows * tileSize) 
+                            g.drawLine(0, y+tileSize, cols*tileSize , y+tileSize)}
             case "square" => g.fillRect(x, y, tileSize, tileSize)
             case "circle" => g.fillOval(x, y, tileSize, tileSize)
             case _ => throw new IllegalArgumentException(s"Unsupported shape: $shape")
@@ -46,5 +50,5 @@ object BoardDrawer extends App {
     g.fillRect(x, y, width, height)
   }
 
-  drawBoard(drawTwoColorBoard, Color.CYAN, 8, 8, Color.WHITE, Color.BLACK, "square")
+  drawBoard(drawTwoColorBoard, Color.WHITE, 3, 3, Color.RED, Color.RED, "line")
 }
