@@ -12,13 +12,13 @@ object BoardDrawer extends App {
         g.fillRect(0, 0, getWidth, getHeight)
         val g2d = g.asInstanceOf[Graphics2D] // cast to Graphics2D
         g2d.setStroke(new BasicStroke(5)) // set line width to 5
-        val tileSize = Math.min((getWidth-100) / cols, (getHeight-100) / rows)
+        val tileSize = Math.min((getWidth-150) / cols, (getHeight-150) / rows)
         for {
           row <- 0 until rows
           col <- 0 until cols
         } {
-          val x = ( col * tileSize ) +50
-          val y = ( row * tileSize ) +50
+          val x = ( col * tileSize ) +75
+          val y = ( row * tileSize ) +75
           val tileColor = if ((row + col) % 2 == 0) color1 else color2
           g.setColor(tileColor)
           shape match {
