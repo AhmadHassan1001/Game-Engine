@@ -12,7 +12,7 @@ object GuiProgramSix {
   def main(args: Array[String]): Unit = {
     var input = "Connect4"
 
-    // var scaledImage = ImageIO.read(new FileInputStream("/src/main/scala/Assets/Chess/BishopBlack.png"));
+    //var scaledImage = ImageIO.read(new FileInputStream("./Assets/Chess/BishopBlack.png"));
 
     var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
 
@@ -171,17 +171,12 @@ object GuiProgramSix {
           override def paint(g: Graphics2D): Unit = {
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
           }
-
-          // var textField = new TextField
-          // textField.background = Color.BLUE
-          // textField.preferredSize = new Dimension(100,100)
-          // contents+= textField
-
         }
 
         this.bounds_=(new Rectangle(700, 700))
         this.background_=(new Color(0, 0, 0))
         this.centerOnScreen()
+        this.resizable = false
         this.visible = true
       }
     }
@@ -205,7 +200,6 @@ contents = new BoxPanel(Orientation.Vertical) {
 
   }
 }
-
 
 val chess_Drawer = (g: Graphics2D) => {
       g.setColor(new Color(0xffffff))
@@ -259,4 +253,20 @@ val chess_Drawer = (g: Graphics2D) => {
       g.drawLine(50, 220, 640, 220)
       g.drawLine(50, 390, 640, 390)
     }
+
+  var textField = new TextField()
+  textField.background = Color.white
+  textField.font = new Font("Arial",1,16)
+  textField.maximumSize = new Dimension(600,60)
+  textField.minimumSize = new Dimension(600,60)
+  textField.preferredSize = new Dimension(600,60)
+  textField.xLayoutAlignment_=(0f)
+
+  var button = new Button("input")
+  button.xLayoutAlignment_=(600f)
+
+  contents += Swing.VStrut(600) 
+  contents += textField
+  contents += button
+
 */
