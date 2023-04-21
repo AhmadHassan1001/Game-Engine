@@ -1,5 +1,6 @@
 *.class
 *.log
+Scala/scalaengine/.metals/metals.lock.db
 
 # for java script
 
