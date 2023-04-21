@@ -173,11 +173,11 @@ object GuiProgramSix {
           }
         }
 
-        this.bounds_=(new Rectangle(700, 700))
-        this.background_=(new Color(0, 0, 0))
-        this.centerOnScreen()
-        this.resizable = false
-        this.visible = true
+        bounds_=(new Rectangle(700, 700))
+        background_=(new Color(0, 0, 0))
+        centerOnScreen()
+        resizable = false
+        visible = true
       }
     }
   }
