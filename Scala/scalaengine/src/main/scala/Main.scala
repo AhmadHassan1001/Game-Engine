@@ -14,7 +14,193 @@ object GuiProgramSix {
 
     // var scaledImage = ImageIO.read(new FileInputStream("/src/main/scala/Assets/Chess/BishopBlack.png"));
 
-    val chess_Drawer = (g: Graphics2D) => {
+    var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
+
+      g.setColor(Color.WHITE)
+      g.fillRect(0, 0, getWidth, getHeight)
+
+      val tileSize = Math.min((getWidth - 150) / cols, (getHeight - 150) / rows)
+      g.setColor(bgColor)
+      g.fillRect(50, 50, tileSize * cols + 50, tileSize * rows + 50)
+
+      g.setStroke(new BasicStroke(getHeight / 100))
+      val font = new Font("Arial", Font.PLAIN, 16)
+      g.setFont(font)
+
+      for {
+        row <- 0 until rows
+        col <- 0 until cols
+      } {
+        val x = (col * tileSize) + 75
+        val y = (row * tileSize) + 75
+        val tileColor = if ((row + col) % 2 == 0) color1 else color2
+        g.setColor(tileColor)
+
+        shape match {
+          case "line" => {
+            if (row != rows - 1 && col != cols - 1) {
+              // changes color every 3 steps for soduko
+              if (((row + 1) * (col + 1)) % 3 == 0) g.setColor(color1)
+              else g.setColor(color2)
+              g.drawLine(
+                x + tileSize,
+                75,
+                x + tileSize,
+                75 + (tileSize * (rows))
+              )
+              g.drawLine(
+                75,
+                y + tileSize,
+                75 + (tileSize * (cols)),
+                y + tileSize
+              )
+            }
+          }
+          case "square" => g.fillRect(x, y, tileSize, tileSize)
+          case "circle" => g.fillOval(x, y, tileSize, tileSize)
+          case _ => throw new IllegalArgumentException(s"Unsupported shape: $shape")
+        }
+
+        val aChar = ('a' + row).toChar
+        val aString = s"$aChar"
+        val oneString = s"${col + 1}"
+        g.setColor(Color.BLACK)
+        g.drawString(aString, 25, y + tileSize / 2)
+        g.drawString(oneString, x + tileSize / 2, 25)
+        g.drawString(aString, tileSize * cols + 125, y + tileSize / 2)
+        g.drawString(oneString, x + tileSize / 2, tileSize * rows + 125)
+      }
+    }
+  
+    val Chess_Controller = (input: String) => {}
+
+    val Connect4_Controller = (input: String) => {}
+
+    val XO_Controller = (input: String) => {}
+
+    val Checkers_Controller = (input: String) => {}
+
+    val Queens_Controller = (input: String) => {}
+
+    val Suduko_Controller = (input: String) => {}
+
+    new MainFrame {
+      title = "GUI Program"
+
+      val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
+
+      contents = new BoxPanel(Orientation.Vertical) {
+
+        var j = 0;
+        override def paint(g: Graphics2D): Unit = {
+          var myFont = new Font("Courier New", 1, 20);
+          g.setFont(myFont)
+
+          g.setBackground(new Color(0xE5E1E6))
+          g.clearRect(0,0,700,650);
+          g.setColor(new Color(200,100,250))
+
+          var i = 0;
+          Games.foreach(x => {
+            g.drawString(x, 300, 300 + 50 * i)
+            i += 1
+          })
+          
+          g.drawString(">", 270, 300 + 50 * j)
+        }
+
+        listenTo(mouse.clicks)
+        listenTo(keys)
+
+        reactions += {
+          case MouseClicked(_, p, _, _, _) =>
+            println(p)
+            requestFocus()
+          case KeyPressed(_, c, _, _) => c match {
+            
+            case Key.S =>{
+              j+=1;
+              if(j == 6)j=0;
+              repaint()
+            }
+
+            case Key.W =>{
+              j-=1;
+              if(j < 0)j=5;
+              repaint()
+            }
+
+            case Key.Enter =>{
+              input = Games(j);
+              
+              input match {
+                  case "Chess"    => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Chess_Controller)
+                  case "8Queens"   => Queens_Controller
+                  case "Connect4" => Connect4_Controller
+                  case "XO"       => XO_Controller
+                  case "Suduko"   => Suduko_Controller
+                  case "Checkers" => Checkers_Controller
+              }
+
+              //abstractEngine(drawBoard,reqController)
+              dispose()
+            }
+            requestFocus()
+          }
+        }
+      }
+
+      size = new Dimension(700, 650)
+      background = new Color(0xf2d16b)
+      centerOnScreen
+      visible = true
+    }
+
+    def abstractEngine(
+        bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,
+        Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
+        Controller: (String) => Unit
+    ): Unit = {
+      new MainFrame(null) {
+        title = "GUI Program"
+
+        contents = new BoxPanel(Orientation.Vertical) {
+          override def paint(g: Graphics2D): Unit = {
+            Drawer(bgColor,rows,cols,color1,color2,shape,g);
+            // if(scaledImage == null) println("no")
+            // else g.drawImage(scaledImage,100,100,null)
+          }
+        }
+
+        this.bounds_=(new Rectangle(700, 650))
+        this.background_=(new Color(0, 0, 0))
+        this.centerOnScreen()
+        this.visible = true
+      }
+    }
+  }
+}
+
+
+
+/*
+contents = new BoxPanel(Orientation.Vertical) {
+  listenTo(mouse.clicks)
+  listenTo(keys)
+  reactions += {
+    case MouseClicked(_, p, _, _, _) => println(p)
+          requestFocus()
+    case KeyTyped(_, c, _, _) => println(s"Key typed: $c")
+          requestFocus()
+  }
+
+  override def paint(g: Graphics2D): Unit = {
+
+  }
+}
+
+
+val chess_Drawer = (g: Graphics2D) => {
       g.setColor(new Color(0xffffff))
       g.fillRect(120, 80, 440, 440)
       g.setColor(new Color(100, 100, 100))
@@ -66,134 +252,4 @@ object GuiProgramSix {
       g.drawLine(50, 220, 640, 220)
       g.drawLine(50, 390, 640, 390)
     }
-
-    val Chess_Controller = (input: String) => {}
-
-    val Connect4_Controller = (input: String) => {}
-
-    val XO_Controller = (input: String) => {}
-
-    val Checkers_Controller = (input: String) => {}
-
-    val Queens_Controller = (input: String) => {}
-
-    val Suduko_Controller = (input: String) => {}
-
-    new MainFrame {
-      title = "GUI Program"
-
-      val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
-
-      contents = new BoxPanel(Orientation.Vertical) {
-
-        var j = 0;
-        override def paint(g: Graphics2D): Unit = {
-          var myFont = new Font("Courier New", 1, 20);
-          g.setFont(myFont)
-
-          g.setBackground(new Color(0xE5E1E6))
-          g.clearRect(0,0,700,650);
-          g.setColor(new Color(200,100,250))
-
-          var i = 0;
-          Games.foreach(x => {
-            g.drawString(x, 300, 300 + 50 * i)
-            i += 1
-          })
-          
-          g.drawString(">", 270, 300 + 50 * j)
-        }
-
-        listenTo(mouse.clicks)
-        listenTo(keys)
-
-        reactions += {
-          case MouseClicked(_, p, _, _, _) =>
-            println(p)
-            requestFocus()
-          case KeyPressed(_, c, _, _) => c match {
-            
-            case Key.W =>{
-              j+=1;
-              if(j == 6)j=0;
-              repaint()
-            }
-
-            case Key.S =>{
-              j-=1;
-              if(j < 0)j=5;
-              repaint()
-            }
-
-            case Key.Enter =>{
-              input = Games(j);
-
-              val reqBoard = input match {
-                  case "Chess" | "8Queens" | "Checkers" => chess_Drawer
-                  case "Connect4"                      => connect4_Drawer
-                  case "XO"                            => XO_Drawer
-                  case "Suduko"                        => Suduko_Drawer
-              }
-
-              val reqController = input match {
-                  case "Chess"    => Chess_Controller
-                  case "8Queens"   => Queens_Controller
-                  case "Connect4" => Connect4_Controller
-                  case "XO"       => XO_Controller
-                  case "Suduko"   => Suduko_Controller
-                  case "Checkers" => Checkers_Controller
-              }
-
-              abstractEngine(reqBoard,reqController)
-              dispose()
-            }
-            requestFocus()
-          }
-        }
-      }
-
-      size = new Dimension(700, 650)
-      background = new Color(0xf2d16b)
-      centerOnScreen
-      visible = true
-    }
-
-    def abstractEngine(
-        Drawer: (Graphics2D) => Unit,
-        Controller: (String) => Unit
-    ): Unit = {
-      new MainFrame(null) {
-        title = "GUI Program"
-
-        contents = new BoxPanel(Orientation.Vertical) {
-          override def paint(g: Graphics2D): Unit = {
-            Drawer(g);
-            // if(scaledImage == null) println("no")
-            // else g.drawImage(scaledImage,100,100,null)
-          }
-          // repaint()
-        }
-
-        this.bounds_=(new Rectangle(700, 650))
-        this.background_=(new Color(0, 0, 0))
-        this.centerOnScreen()
-        this.visible = true
-      }
-    }
-  }
-}
-
-// contents = new BoxPanel(Orientation.Vertical) {
-//   listenTo(mouse.clicks)
-//   listenTo(keys)
-//   reactions += {
-//     case MouseClicked(_, p, _, _, _) => println(p)
-//           requestFocus()
-//     case KeyTyped(_, c, _, _) => println(s"Key typed: $c")
-//           requestFocus()
-//   }
-
-//   // override def paint(g: Graphics2D): Unit = {
-
-//   // }
-// }
+*/
