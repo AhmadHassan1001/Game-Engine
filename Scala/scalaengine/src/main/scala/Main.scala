@@ -14,59 +14,64 @@ object GuiProgramSix {
 
     // var scaledImage = ImageIO.read(new FileInputStream("/src/main/scala/Assets/Chess/BishopBlack.png"));
 
-    val chess_Drawer = (g: Graphics2D) => {
-      g.setColor(new Color(0xffffff))
-      g.fillRect(120, 80, 440, 440)
-      g.setColor(new Color(100, 100, 100))
+    var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
+
+      g.setColor(Color.WHITE)
+      g.fillRect(0, 0, getWidth, getHeight)
+
+      val tileSize = Math.min((getWidth - 150) / cols, (getHeight - 150) / rows)
+      g.setColor(bgColor)
+      g.fillRect(50, 50, tileSize * cols + 50, tileSize * rows + 50)
+
+      g.setStroke(new BasicStroke(getHeight / 100))
+      val font = new Font("Arial", Font.PLAIN, 16)
+      g.setFont(font)
+
       for {
-        i <- 0 to 7
-        j <- 0 to 7
+        row <- 0 until rows
+        col <- 0 until cols
       } {
+        val x = (col * tileSize) + 75
+        val y = (row * tileSize) + 75
+        val tileColor = if ((row + col) % 2 == 0) color1 else color2
+        g.setColor(tileColor)
 
-        if ((i + j) % 2 == 0) g.setColor(new Color(0xeeeed2))
-        else g.setColor(new Color(0, 0, 0))
-
-        g.fillRect(140 + i * 50, 100 + j * 50, 50, 50)
+        shape match {
+          case "line" => {
+            if (row != rows - 1 && col != cols - 1) {
+              // changes color every 3 steps for soduko
+              if (((row + 1) * (col + 1)) % 3 == 0) g.setColor(color1)
+              else g.setColor(color2)
+              g.drawLine(
+                x + tileSize,
+                75,
+                x + tileSize,
+                75 + (tileSize * (rows))
+              )
+              g.drawLine(
+                75,
+                y + tileSize,
+                75 + (tileSize * (cols)),
+                y + tileSize
+              )
+            }
+          }
+          case "square" => g.fillRect(x, y, tileSize, tileSize)
+          case "circle" => g.fillOval(x, y, tileSize, tileSize)
+          case _ =>
+            throw new IllegalArgumentException(s"Unsupported shape: $shape")
+        }
+        val aChar = ('a' + row).toChar
+        val aString = s"$aChar"
+        val oneString = s"${col + 1}"
+        g.setColor(Color.BLACK)
+        g.drawString(aString, 25, y + tileSize / 2)
+        g.drawString(oneString, x + tileSize / 2, 25)
+        g.drawString(aString, tileSize * cols + 125, y + tileSize / 2)
+        g.drawString(oneString, x + tileSize / 2, tileSize * rows + 125)
       }
     }
-
-    val connect4_Drawer = (g: Graphics2D) => {
-      g.setColor(new Color(0x06038d))
-      g.fillRoundRect(150, 90, 400, 440, 10, 10)
-      g.setColor(new Color(255, 255, 255))
-      for {
-        i <- 0 to 5
-        j <- 0 to 6
-      } {
-        g.fillOval(185 + i * 55, 120 + j * 55, 50, 50)
-      }
-    }
-
-    val XO_Drawer = (g: Graphics2D) => {
-      g.setColor(new Color(139, 211, 230))
-      g.fillRoundRect(45, 45, 600, 520, 10, 10)
-      g.setColor(new Color(206, 162, 0))
-      g.setStroke(new BasicStroke(10))
-
-      g.drawLine(246, 50, 246, 560)
-      g.drawLine(442, 50, 442, 560)
-      g.drawLine(50, 220, 640, 220)
-      g.drawLine(50, 390, 640, 390)
-    }
-
-    /*to be implemented*/
-    val Suduko_Drawer = (g: Graphics2D) => {
-      g.setColor(new Color(139, 211, 230))
-      g.fillRoundRect(45, 45, 600, 520, 10, 10)
-      g.setColor(new Color(206, 162, 0))
-      g.setStroke(new BasicStroke(10))
-
-      g.drawLine(246, 50, 246, 560)
-      g.drawLine(442, 50, 442, 560)
-      g.drawLine(50, 220, 640, 220)
-      g.drawLine(50, 390, 640, 390)
-    }
-
+  
     val Chess_Controller = (input: String) => {}
 
     val Connect4_Controller = (input: String) => {}
@@ -127,16 +132,9 @@ object GuiProgramSix {
 
             case Key.Enter =>{
               input = Games(j);
-
-              val reqBoard = input match {
-                  case "Chess" | "8Queens" | "Checkers" => chess_Drawer
-                  case "Connect4"                      => connect4_Drawer
-                  case "XO"                            => XO_Drawer
-                  case "Suduko"                        => Suduko_Drawer
-              }
-
-              val reqController = input match {
-                  case "Chess"    => Chess_Controller
+              
+              input match {
+                  case "Chess"    => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Chess_Controller)
                   case "8Queens"   => Queens_Controller
                   case "Connect4" => Connect4_Controller
                   case "XO"       => XO_Controller
@@ -144,7 +142,7 @@ object GuiProgramSix {
                   case "Checkers" => Checkers_Controller
               }
 
-              abstractEngine(reqBoard,reqController)
+              //abstractEngine(drawBoard,reqController)
               dispose()
             }
             requestFocus()
@@ -159,7 +157,8 @@ object GuiProgramSix {
     }
 
     def abstractEngine(
-        Drawer: (Graphics2D) => Unit,
+        bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,
+        Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
         Controller: (String) => Unit
     ): Unit = {
       new MainFrame(null) {
@@ -167,7 +166,7 @@ object GuiProgramSix {
 
         contents = new BoxPanel(Orientation.Vertical) {
           override def paint(g: Graphics2D): Unit = {
-            Drawer(g);
+            Drawer(bgColor,rows,cols,color1,color2,shape,g);
             // if(scaledImage == null) println("no")
             // else g.drawImage(scaledImage,100,100,null)
           }
@@ -181,6 +180,8 @@ object GuiProgramSix {
     }
   }
 }
+
+
 
 /*
 contents = new BoxPanel(Orientation.Vertical) {
@@ -197,4 +198,58 @@ contents = new BoxPanel(Orientation.Vertical) {
 
   }
 }
+
+
+val chess_Drawer = (g: Graphics2D) => {
+      g.setColor(new Color(0xffffff))
+      g.fillRect(120, 80, 440, 440)
+      g.setColor(new Color(100, 100, 100))
+      for {
+        i <- 0 to 7
+        j <- 0 to 7
+      } {
+
+        if ((i + j) % 2 == 0) g.setColor(new Color(0xeeeed2))
+        else g.setColor(new Color(0, 0, 0))
+
+        g.fillRect(140 + i * 50, 100 + j * 50, 50, 50)
+      }
+    }
+
+    val connect4_Drawer = (g: Graphics2D) => {
+      g.setColor(new Color(0x06038d))
+      g.fillRoundRect(150, 90, 400, 440, 10, 10)
+      g.setColor(new Color(255, 255, 255))
+      for {
+        i <- 0 to 5
+        j <- 0 to 6
+      } {
+        g.fillOval(185 + i * 55, 120 + j * 55, 50, 50)
+      }
+    }
+
+    val XO_Drawer = (g: Graphics2D) => {
+      g.setColor(new Color(139, 211, 230))
+      g.fillRoundRect(45, 45, 600, 520, 10, 10)
+      g.setColor(new Color(206, 162, 0))
+      g.setStroke(new BasicStroke(10))
+
+      g.drawLine(246, 50, 246, 560)
+      g.drawLine(442, 50, 442, 560)
+      g.drawLine(50, 220, 640, 220)
+      g.drawLine(50, 390, 640, 390)
+    }
+
+    /*to be implemented*/
+    val Suduko_Drawer = (g: Graphics2D) => {
+      g.setColor(new Color(139, 211, 230))
+      g.fillRoundRect(45, 45, 600, 520, 10, 10)
+      g.setColor(new Color(206, 162, 0))
+      g.setStroke(new BasicStroke(10))
+
+      g.drawLine(246, 50, 246, 560)
+      g.drawLine(442, 50, 442, 560)
+      g.drawLine(50, 220, 640, 220)
+      g.drawLine(50, 390, 640, 390)
+    }
 */
