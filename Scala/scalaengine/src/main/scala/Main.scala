@@ -113,13 +113,13 @@ object GuiProgramSix {
             requestFocus()
           case KeyPressed(_, c, _, _) => c match {
             
-            case Key.W =>{
+            case Key.S =>{
               j+=1;
               if(j == 6)j=0;
               repaint()
             }
 
-            case Key.S =>{
+            case Key.W =>{
               j-=1;
               if(j < 0)j=5;
               repaint()
@@ -171,7 +171,6 @@ object GuiProgramSix {
             // if(scaledImage == null) println("no")
             // else g.drawImage(scaledImage,100,100,null)
           }
-          // repaint()
         }
 
         this.bounds_=(new Rectangle(700, 650))
@@ -183,17 +182,19 @@ object GuiProgramSix {
   }
 }
 
-// contents = new BoxPanel(Orientation.Vertical) {
-//   listenTo(mouse.clicks)
-//   listenTo(keys)
-//   reactions += {
-//     case MouseClicked(_, p, _, _, _) => println(p)
-//           requestFocus()
-//     case KeyTyped(_, c, _, _) => println(s"Key typed: $c")
-//           requestFocus()
-//   }
+/*
+contents = new BoxPanel(Orientation.Vertical) {
+  listenTo(mouse.clicks)
+  listenTo(keys)
+  reactions += {
+    case MouseClicked(_, p, _, _, _) => println(p)
+          requestFocus()
+    case KeyTyped(_, c, _, _) => println(s"Key typed: $c")
+          requestFocus()
+  }
 
-//   // override def paint(g: Graphics2D): Unit = {
+  override def paint(g: Graphics2D): Unit = {
 
-//   // }
-// }
+  }
+}
+*/
