@@ -16,8 +16,8 @@ object GuiProgramSix {
 
     var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
 
-      var width = 512;
-      var height = 512;
+      var width = 700;
+      var height = 600;
 
       g.setColor(Color.WHITE)
       g.fillRect(0, 0, width, height)
@@ -113,8 +113,8 @@ object GuiProgramSix {
           g.drawString(">", 270, 300 + 50 * j)
         }
 
-        listenTo(mouse.clicks)
         listenTo(keys)
+        listenTo(mouse.clicks)
 
         reactions += {
           case MouseClicked(_, p, _, _, _) =>
@@ -165,17 +165,21 @@ object GuiProgramSix {
         Controller: (String) => Unit
     ): Unit = {
       new MainFrame(null) {
-        title = "GUI Program"
+        title = "Game Engine"
 
         contents = new BoxPanel(Orientation.Vertical) {
           override def paint(g: Graphics2D): Unit = {
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
-            // if(scaledImage == null) println("no")
-            // else g.drawImage(scaledImage,100,100,null)
           }
+
+          // var textField = new TextField
+          // textField.background = Color.BLUE
+          // textField.preferredSize = new Dimension(100,100)
+          // contents+= textField
+
         }
 
-        this.bounds_=(new Rectangle(700, 650))
+        this.bounds_=(new Rectangle(700, 700))
         this.background_=(new Color(0, 0, 0))
         this.centerOnScreen()
         this.visible = true
