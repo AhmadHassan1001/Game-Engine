@@ -58,9 +58,9 @@ object GuiProgramSix {
           }
           case "square" => g.fillRect(x, y, tileSize, tileSize)
           case "circle" => g.fillOval(x, y, tileSize, tileSize)
-          case _ =>
-            throw new IllegalArgumentException(s"Unsupported shape: $shape")
+          case _ => throw new IllegalArgumentException(s"Unsupported shape: $shape")
         }
+
         val aChar = ('a' + row).toChar
         val aString = s"$aChar"
         val oneString = s"${col + 1}"
