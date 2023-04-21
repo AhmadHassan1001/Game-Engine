@@ -16,15 +16,18 @@ object GuiProgramSix {
 
     var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
 
-      g.setColor(Color.WHITE)
-      g.fillRect(0, 0, getWidth, getHeight)
+      var width = 512;
+      var height = 512;
 
-      val tileSize = Math.min((getWidth - 150) / cols, (getHeight - 150) / rows)
+      g.setColor(Color.WHITE)
+      g.fillRect(0, 0, width, height)
+
+      val tileSize = Math.min((width - 150) / cols, (height - 150) / rows)
       g.setColor(bgColor)
       g.fillRect(50, 50, tileSize * cols + 50, tileSize * rows + 50)
 
-      g.setStroke(new BasicStroke(getHeight / 100))
-      val font = new Font("Arial", Font.PLAIN, 16)
+      g.setStroke(new BasicStroke(height / 100))
+      val font = new Font("Arial", 0, 16)
       g.setFont(font)
 
       for {
@@ -72,6 +75,7 @@ object GuiProgramSix {
       }
     }
   
+
     val Chess_Controller = (input: String) => {}
 
     val Connect4_Controller = (input: String) => {}
@@ -135,14 +139,13 @@ object GuiProgramSix {
               
               input match {
                   case "Chess"    => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Chess_Controller)
-                  case "8Queens"   => Queens_Controller
-                  case "Connect4" => Connect4_Controller
-                  case "XO"       => XO_Controller
-                  case "Suduko"   => Suduko_Controller
-                  case "Checkers" => Checkers_Controller
+                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Queens_Controller)
+                  case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",drawBoard,Connect4_Controller)
+                  case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",drawBoard,XO_Controller)
+                  case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",drawBoard,Suduko_Controller)
+                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Checkers_Controller)
               }
 
-              //abstractEngine(drawBoard,reqController)
               dispose()
             }
             requestFocus()

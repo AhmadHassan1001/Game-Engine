@@ -1,3 +1,4 @@
+
 import java.awt.{Color, Font, Graphics, Graphics2D, BasicStroke}
 import javax.swing.{JFrame, JPanel}
 import scala.swing.event.WindowClosed
