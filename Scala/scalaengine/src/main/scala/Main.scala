@@ -2,18 +2,29 @@ import scala.swing._
 import scala.swing.event._
 import java.awt.{Color, Graphics2D, BasicStroke}
 import java.awt.geom._
-import java.awt.Canvas
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.FileInputStream
+import java.io.File
 
 object GuiProgramSix {
 
   def main(args: Array[String]): Unit = {
     var input = "Connect4"
 
-    //var scaledImage = ImageIO.read(new FileInputStream("./Assets/Chess/BishopBlack.png"));
+    //Chess Array
+    var chessImageArrayW = Array((1,"RookWhite"),(2,"KnightWhite"),(3,"BishopWhite"),(4,"QueenWhite"),
+                                 (5,"KingWhite"),(3,"BishopWhite"),(2,"KnightWhite"),(1,"RookWhite"))
+    var chessImageArrayB = Array((7,"RookBlack"),(8,"KnightBlack"),(9,"BishopBlack"),(10,"QueenBlack"),
+                                 (11,"KingBlack"),(9,"BishopBlack"),(8,"KnightBlack"),(7,"RookBlack"))
 
+    var chessBoard = Array.ofDim[Tuple2[Int,String]](8,8)
+    chessBoard(0) = chessImageArrayW
+    chessBoard(1) = Array.fill[Tuple2[Int,String]](8)(6,"PawnWhite")
+    chessBoard(6) = Array.fill[Tuple2[Int,String]](8)(12,"PawnBlack")
+    chessBoard(7) = chessImageArrayB  
+
+    
     var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
 
       var width = 700;
@@ -138,12 +149,12 @@ object GuiProgramSix {
               input = Games(j);
               
               input match {
-                  case "Chess"    => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Chess_Controller)
-                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Queens_Controller)
+                  case "Chess"    => abstractEngine(Color.GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",drawBoard,Chess_Controller)
+                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",drawBoard,Queens_Controller)
                   case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",drawBoard,Connect4_Controller)
                   case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",drawBoard,XO_Controller)
                   case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",drawBoard,Suduko_Controller)
-                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, Color.BLACK, Color.WHITE, "square",drawBoard,Checkers_Controller)
+                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",drawBoard,Checkers_Controller)
               }
 
               dispose()
@@ -170,11 +181,28 @@ object GuiProgramSix {
         contents = new BoxPanel(Orientation.Vertical) {
           override def paint(g: Graphics2D): Unit = {
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
+
+            for {
+              row <- 0 until 8
+              col <- 0 until 8
+            } {
+              val x = (col * 57) + 75
+              val y = (row * 57) + 75
+              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
+            }
+
+          }  
+
+          def readImage(img:String):BufferedImage = {
+            val file = new File("src/main/resources/Chess/"+img+".png")
+            val image = ImageIO.read(file)
+            image
           }
+          
         }
 
-        bounds_=(new Rectangle(700, 700))
-        background_=(new Color(0, 0, 0))
+        bounds = new Rectangle(700, 700)
+        background = new Color(0, 0, 0)
         centerOnScreen()
         resizable = false
         visible = true
@@ -268,5 +296,18 @@ val chess_Drawer = (g: Graphics2D) => {
   contents += Swing.VStrut(600) 
   contents += textField
   contents += button
+
+
+      
+    for{
+      i <- 0 until 8
+      j <- 0 until 8
+    }{
+      print(chessBoard(i)(j))
+      if(j == 7)println()
+    }
+
+  //val file = new File("src/main/resources/Chess/BishopBlack.png")
+  // val image = ImageIO.read(file)
 
 */
