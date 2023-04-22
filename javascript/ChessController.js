@@ -12,8 +12,8 @@ const move=(controller,pos1,pos2)=>{
 
     // Move
     console.log(`move  ${8-1-(orderDigit(pos1[1])-1)} ${orderAlpha(pos1[0])}`)
-    controller.drawer.pieces[8-1-(orderDigit(pos2[1])-1)][orderAlpha(pos2[0])]=controller.drawer.pieces[8-1-(orderDigit(pos1[1])-1)][orderAlpha(pos1[0])];
-    controller.drawer.pieces[8-1-(orderDigit(pos1[1])-1)][orderAlpha(pos1[0])]=null;
+    controller.drawerMap[8-1-(orderDigit(pos2[1])-1)][orderAlpha(pos2[0])]=controller.drawerMap[8-1-(orderDigit(pos1[1])-1)][orderAlpha(pos1[0])];
+    controller.drawerMap[8-1-(orderDigit(pos1[1])-1)][orderAlpha(pos1[0])]=null;
 }
 
 let actions={
@@ -22,9 +22,7 @@ let actions={
 
 class ChessController extends Controller{
     
-    constructor(){
-        super(actions);
-        
-        this.drawer= new ChessDrawer();
+    constructor(drawerMap){
+        super(drawerMap,actions);
     }
 }

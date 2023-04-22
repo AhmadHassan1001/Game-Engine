@@ -4,12 +4,13 @@ const canvasHeight = 700;
 function setup() {
   const canvas = createCanvas(canvasWidth, canvasHeight);
   canvas.position((windowWidth - canvasWidth) / 2, (windowHeight - canvasHeight) / 2);
-  controller=new ChessController();
+  drawer=new ChessDrawer();
+  controller=new ChessController(drawer.pieces);
 }
 
 function draw() {
-  controller.drawer.DrawBoard();
-  controller.drawer.DrawPieces();
+  drawer.DrawBoard();
+  drawer.DrawPieces();
 
   // let input = document.getElementById('input');
 

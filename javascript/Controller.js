@@ -1,7 +1,8 @@
 class Controller {
-    drawer=null
-    constructor(actions) {
+    drawerMap=null
+    constructor(drawerMap,actions) {
         this.actions=actions;// actions that user can do with its validations
+        this.drawerMap=drawerMap;
     }
 
     run(action){
