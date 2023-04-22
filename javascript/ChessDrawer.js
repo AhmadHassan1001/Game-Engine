@@ -1,3 +1,5 @@
+
+
 class ChessDrawer extends Drawer {
 
     constructor() {
@@ -45,5 +47,6 @@ class ChessDrawer extends Drawer {
         // rook
         this.pieces[0][7] = new ChessPiece(1, 4);
         this.pieces[this.rows - 1][7] = new ChessPiece(0, 4);
+
     }
 }
