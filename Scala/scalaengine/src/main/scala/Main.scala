@@ -9,7 +9,7 @@ import java.io.File
 import javax.swing.border.Border
 import java.awt
 
-object GuiProgramSix {
+object GameEngine {
 
   def main(args: Array[String]): Unit = {
     var input = "Connect4"
@@ -89,20 +89,27 @@ object GuiProgramSix {
     }
   
 
-    val Chess_Controller = (input: String) => {}
+    val Chess_Controller = (input: String) => {
+      if(input.size != 4) false
 
-    val Connect4_Controller = (input: String) => {}
+      var start:Tuple2[Char,Int] = (input(0),input(1).asDigit)
+      var end  :Tuple2[Char,Int] = (input(2),input(3).asDigit)
 
-    val XO_Controller = (input: String) => {}
+      true
+    }: Boolean
 
-    val Checkers_Controller = (input: String) => {}
+    val Connect4_Controller = (input: String) => {true}: Boolean
 
-    val Queens_Controller = (input: String) => {}
+    val XO_Controller = (input: String) => {true}: Boolean
 
-    val Suduko_Controller = (input: String) => {}
+    val Checkers_Controller = (input: String) => {true}: Boolean
+
+    val Queens_Controller = (input: String) => {true}: Boolean
+
+    val Suduko_Controller = (input: String) => {true}: Boolean
 
     new MainFrame {
-      title = "GUI Program"
+      title = "Game Engine"
 
       val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
 
@@ -175,17 +182,16 @@ object GuiProgramSix {
     def abstractEngine(
         bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,typ:Int,
         Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
-        Controller: (String) => Unit
+        Controller: (String) => Boolean
     ): Unit = {
       new MainFrame(null) {
         title = "Game Engine"
-
-        contents = new BoxPanel(Orientation.Vertical) {
-
+        class Canvas extends Component {
+          preferredSize = new Dimension(700, 600)
           override def paint(g: Graphics2D): Unit = {
 
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
-      
+            
             for {
               row <- 0 until 8
               col <- 0 until 8
@@ -194,20 +200,20 @@ object GuiProgramSix {
               val y = (row * 57) + 75
               if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
             }
-          }  
-
+          }       
+          
           def readImage(img:String):BufferedImage = {
             val file = new File("src/main/resources/Chess/"+img+".png")
             val image = ImageIO.read(file)
             image
           }
+        }  
 
-          var actionButton = Button(""){repaint()}
-          actionButton.visible = false
-          contents+=actionButton
+        //GUI
+        contents = new BoxPanel(Orientation.Vertical) {
 
-          //GUI
-          contents += Swing.VStrut(100)
+          var canvas = new Canvas
+          contents += canvas
           contents += Swing.Glue
           contents += new FlowPanel{
   
@@ -248,32 +254,30 @@ object GuiProgramSix {
 
               contents += Swing.HStrut(320)
               contents += Button("Do Action!!") { 
-                  var input = inputField1.text+inputField2.text
+                  var s1 = inputField1.text
+                  var s2 = inputField2.text
+                  var input = s1+s2
                   println(input) 
 
-                  //Controller(input(2))
-                  //chessBoard(0)(0) = (3,"BishopBlack")
+                  if(Controller(input)){
 
-                  actionButton.doClick()
+                    chessBoard(s2(0)-'a')(s2(1).asDigit-1) = chessBoard(s1(0)-'a')(s1(1).asDigit-1)
+                    chessBoard(s1(0)-'a')(s1(1).asDigit-1) = null
+                    canvas.repaint()
+                  }                 
               }
             }
-
             background = new Color(0xb1e9fe)
             maximumSize = new Dimension(700,80)
             preferredSize = new Dimension(700,80)
             border = Swing.TitledBorder(Swing.EtchedBorder(Swing.Lowered), "Input")
-          }
-
-
-          
+          } 
         }
-
         bounds = new Rectangle(700, 700)
         centerOnScreen()
         resizable = false
         visible = true
       }
-
     }
   }
 }
