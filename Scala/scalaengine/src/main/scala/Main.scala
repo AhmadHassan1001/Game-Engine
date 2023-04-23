@@ -89,17 +89,24 @@ object GameEngine {
     }
   
 
-    val Chess_Controller = (input: String) => {}
+    val Chess_Controller = (input: String) => {
+      if(input.size != 4) false
 
-    val Connect4_Controller = (input: String) => {}
+      var start:Tuple2[Char,Int] = (input(0),input(1).asDigit)
+      var end  :Tuple2[Char,Int] = (input(2),input(3).asDigit)
 
-    val XO_Controller = (input: String) => {}
+      true
+    }: Boolean
 
-    val Checkers_Controller = (input: String) => {}
+    val Connect4_Controller = (input: String) => {true}: Boolean
 
-    val Queens_Controller = (input: String) => {}
+    val XO_Controller = (input: String) => {true}: Boolean
 
-    val Suduko_Controller = (input: String) => {}
+    val Checkers_Controller = (input: String) => {true}: Boolean
+
+    val Queens_Controller = (input: String) => {true}: Boolean
+
+    val Suduko_Controller = (input: String) => {true}: Boolean
 
     new MainFrame {
       title = "Game Engine"
@@ -175,7 +182,7 @@ object GameEngine {
     def abstractEngine(
         bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,typ:Int,
         Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
-        Controller: (String) => Unit
+        Controller: (String) => Boolean
     ): Unit = {
       new MainFrame(null) {
         title = "Game Engine"
@@ -247,12 +254,17 @@ object GameEngine {
 
               contents += Swing.HStrut(320)
               contents += Button("Do Action!!") { 
-                  var input = inputField1.text+inputField2.text
+                  var s1 = inputField1.text
+                  var s2 = inputField2.text
+                  var input = s1+s2
                   println(input) 
 
-                  //Controller(input(2))
-                  //chessBoard(0)(0) = (3,"BishopBlack")
-                  canvas.repaint()
+                  if(Controller(input)){
+
+                    chessBoard(s2(0)-'a')(s2(1).asDigit-1) = chessBoard(s1(0)-'a')(s1(1).asDigit-1)
+                    chessBoard(s1(0)-'a')(s1(1).asDigit-1) = null
+                    canvas.repaint()
+                  }                 
               }
             }
             background = new Color(0xb1e9fe)
