@@ -217,9 +217,9 @@ object GuiProgramSix {
               else str = "Start Position"
 
               contents += Swing.HStrut(10)          
-              contents += new Label(str){font = new Font("Segoe Print", 0, 16)}
+              contents += new Label(str){font = new Font("Segoe Print", 1, 16)}
               contents += Swing.HStrut(27)
-              if(typ == 2)contents += new Label("end Position"){font = new Font("Segoe Print", 0, 16)}
+              if(typ == 2)contents += new Label("end Position"){font = new Font("Segoe Print", 1, 16)}
             }
 
             contents += new BoxPanel(Orientation.NoOrientation){
