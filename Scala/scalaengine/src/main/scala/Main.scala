@@ -9,7 +9,7 @@ import java.io.File
 import javax.swing.border.Border
 import java.awt
 
-object GuiProgramSix {
+object GameEngine {
 
   def main(args: Array[String]): Unit = {
     var input = "Connect4"
@@ -102,7 +102,7 @@ object GuiProgramSix {
     val Suduko_Controller = (input: String) => {}
 
     new MainFrame {
-      title = "GUI Program"
+      title = "Game Engine"
 
       val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
 
@@ -179,13 +179,12 @@ object GuiProgramSix {
     ): Unit = {
       new MainFrame(null) {
         title = "Game Engine"
-
-        contents = new BoxPanel(Orientation.Vertical) {
-
+        class Canvas extends Component {
+          preferredSize = new Dimension(700, 600)
           override def paint(g: Graphics2D): Unit = {
 
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
-      
+            
             for {
               row <- 0 until 8
               col <- 0 until 8
@@ -194,20 +193,20 @@ object GuiProgramSix {
               val y = (row * 57) + 75
               if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
             }
-          }  
-
+          }       
+          
           def readImage(img:String):BufferedImage = {
             val file = new File("src/main/resources/Chess/"+img+".png")
             val image = ImageIO.read(file)
             image
           }
+        }  
 
-          var actionButton = Button(""){repaint()}
-          actionButton.visible = false
-          contents+=actionButton
+        //GUI
+        contents = new BoxPanel(Orientation.Vertical) {
 
-          //GUI
-          contents += Swing.VStrut(100)
+          var canvas = new Canvas
+          contents += canvas
           contents += Swing.Glue
           contents += new FlowPanel{
   
@@ -253,27 +252,20 @@ object GuiProgramSix {
 
                   //Controller(input(2))
                   //chessBoard(0)(0) = (3,"BishopBlack")
-
-                  actionButton.doClick()
+                  canvas.repaint()
               }
             }
-
             background = new Color(0xb1e9fe)
             maximumSize = new Dimension(700,80)
             preferredSize = new Dimension(700,80)
             border = Swing.TitledBorder(Swing.EtchedBorder(Swing.Lowered), "Input")
-          }
-
-
-          
+          } 
         }
-
         bounds = new Rectangle(700, 700)
         centerOnScreen()
         resizable = false
         visible = true
       }
-
     }
   }
 }
