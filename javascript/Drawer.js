@@ -37,14 +37,14 @@ class Drawer {
                     fill(this.primaryColour);
                 else
                     fill(this.secondaryColour);
-                rect(j * tileHeight, i * tileWidth, tileWidth, tileHeight);
+                rect(j * tileWidth, i * tileHeight, tileWidth, tileHeight);
             }
         }
     }
 
     DrawPieces() {
         const tileWidth = canvasWidth / this.columns;
-        const tileHeight = canvasWidth / this.rows;
+        const tileHeight = canvasHeight / this.rows;
 
         this.pieces.forEach((row, i) => {
             row.forEach((element, j) => {

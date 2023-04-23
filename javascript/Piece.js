@@ -14,3 +14,10 @@ class ChessPiece extends Piece {
         super(i, j, 800 / 6, 267 / 2);
     }
 }
+
+class Connect4Piece {
+    
+    constructor() {
+        this.colour = 'rgba(255, 255, 255, 255)';
+    }
+}
