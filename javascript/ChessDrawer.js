@@ -19,11 +19,11 @@ class ChessDrawer extends Drawer {
         }
 
         // rook black
-        this.pieces[0][0] = new ChessPiece(1, 4,'rock');
+        this.pieces[0][0] = new ChessPiece(1, 4,'rook');
         this.pieces[0][0].labels.push('black');
 
         //rook white
-        this.pieces[this.rows - 1][0] = new ChessPiece(0, 4,'rock');
+        this.pieces[this.rows - 1][0] = new ChessPiece(0, 4,'rook');
         this.pieces[this.rows - 1][0].labels.push('white');
 
 
