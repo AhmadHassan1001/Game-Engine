@@ -88,7 +88,7 @@ object GameEngine {
       }
     }
 
-
+    /*Check if a given coordinates is in the board or out*/
     def InBoard(input: String,rows:Int,cols:Int):Boolean = {
 
       if(input.size != 4)false
@@ -243,7 +243,29 @@ object GameEngine {
       }
 
       def kingMove():Boolean={
-        false
+        var accept = true
+
+        if(Math.abs(deltaY)<2 && Math.abs(deltaX)<2){
+          var startY = start._1+deltaY
+          var startX = start._2+deltaX
+
+          for{
+            i <- List(0,-1,1)
+            j <- List(0,-1,1)
+          }{
+            if(i>=0 && i<8 && j>=0 && j<8 && (i != 0 || j != 0)){
+              
+              if(chessBoard(startY+i)(startX+j)._1 <= 6 && turn == 0)accept = false
+              if(chessBoard(startY+i)(startX+j)._1 > 6 && turn == 1)accept = false
+              
+            }
+          }
+        }
+        else{
+          accept = false
+        }
+
+        accept
       }
 
       def pawnMove():Boolean={
@@ -253,16 +275,24 @@ object GameEngine {
         var startX = start._2
 
         if(turn == 0){
-          if(deltaY == -1 && deltaX == 0 && chessBoard(startY-1)(startX) == null)accept = true
+          //Black pawn moves up by 1
+          if(deltaY == -1 && deltaX == 0 && chessBoard(startY-1)(startX) == null)accept = true 
+          //Black pawn moves diagonally left by 1
           if(deltaY == -1 && deltaX == -1 && chessBoard(startY-1)(startX-1) != null)accept = true
+          //Black pawn moves diagonally right by 1
           if(deltaY == -1 && deltaX == 1 && chessBoard(startY-1)(startX+1) != null)accept = true
-          if(deltaY == -2 && startY == 6 && chessBoard(startY-2)(startX) == null)accept = true
+          //Black pawn moves up by 2 at first move
+          if(deltaY == -2 && startY == 6 && chessBoard(startY-2)(startX) == null && chessBoard(startY-1)(startX) == null)accept = true
         }
         else{
+          //White pawn moves up by 1
           if(deltaY == 1 && deltaX == 0 && chessBoard(startY+1)(startX) == null)accept = true
+          //White pawn moves diagonally left by 1
           if(deltaY == 1 && deltaX == -1 && chessBoard(startY+1)(startX-1) != null)accept = true
+          //White pawn moves diagonally right by 1
           if(deltaY == 1 && deltaX == 1 && chessBoard(startY+1)(startX+1) != null)accept = true
-          if(deltaY == 2 && startY == 1 && chessBoard(startY+2)(startX) == null)accept = true
+          //White pawn moves up by 2 at first move
+          if(deltaY == 2 && startY == 1 && chessBoard(startY+2)(startX) == null && chessBoard(startY+1)(startX) == null)accept = true
         }
       
         accept
