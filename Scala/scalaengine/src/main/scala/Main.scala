@@ -182,18 +182,19 @@ object GuiProgramSix {
 
         contents = new BoxPanel(Orientation.Vertical) {
 
-          // override def paint(g: Graphics2D): Unit = {
-          //   Drawer(bgColor,rows,cols,color1,color2,shape,g);
+          override def paint(g: Graphics2D): Unit = {
+
+            Drawer(bgColor,rows,cols,color1,color2,shape,g);
       
-          //   for {
-          //     row <- 0 until 8
-          //     col <- 0 until 8
-          //   } {
-          //     val x = (col * 57) + 75
-          //     val y = (row * 57) + 75
-          //     if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
-          //   }
-          // }  
+            for {
+              row <- 0 until 8
+              col <- 0 until 8
+            } {
+              val x = (col * 57) + 75
+              val y = (row * 57) + 75
+              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
+            }
+          }  
 
           def readImage(img:String):BufferedImage = {
             val file = new File("src/main/resources/Chess/"+img+".png")
@@ -201,12 +202,15 @@ object GuiProgramSix {
             image
           }
 
+          var actionButton = Button(""){repaint()}
+          actionButton.visible = false
+          contents+=actionButton
+
           //GUI
-          
           contents += Swing.VStrut(100)
           contents += Swing.Glue
           contents += new FlowPanel{
-            
+  
             contents += new BoxPanel(Orientation.NoOrientation){
               maximumSize = new Dimension(670,20)
               preferredSize = new Dimension(670,20)
@@ -246,7 +250,11 @@ object GuiProgramSix {
               contents += Button("Do Action!!") { 
                   var input = inputField1.text+inputField2.text
                   println(input) 
+
                   //Controller(input(2))
+                  //chessBoard(0)(0) = (3,"BishopBlack")
+
+                  actionButton.doClick()
               }
             }
 
@@ -255,6 +263,8 @@ object GuiProgramSix {
             preferredSize = new Dimension(700,80)
             border = Swing.TitledBorder(Swing.EtchedBorder(Swing.Lowered), "Input")
           }
+
+
           
         }
 
