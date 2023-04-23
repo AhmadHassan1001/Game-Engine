@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.FileInputStream
 import java.io.File
+import javax.swing.border.Border
+import java.awt
 
 object GuiProgramSix {
 
@@ -149,12 +151,12 @@ object GuiProgramSix {
               input = Games(j);
               
               input match {
-                  case "Chess"    => abstractEngine(Color.GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",drawBoard,Chess_Controller)
-                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",drawBoard,Queens_Controller)
-                  case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",drawBoard,Connect4_Controller)
-                  case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",drawBoard,XO_Controller)
-                  case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",drawBoard,Suduko_Controller)
-                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",drawBoard,Checkers_Controller)
+                  case "Chess"    => abstractEngine(Color.GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",2,drawBoard,Chess_Controller)
+                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",2,drawBoard,Queens_Controller)
+                  case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",1,drawBoard,Connect4_Controller)
+                  case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",1,drawBoard,XO_Controller)
+                  case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",1,drawBoard,Suduko_Controller)
+                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE,"square",2,drawBoard,Checkers_Controller)
               }
 
               dispose()
@@ -171,7 +173,7 @@ object GuiProgramSix {
     }
 
     def abstractEngine(
-        bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,
+        bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,typ:Int,
         Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
         Controller: (String) => Unit
     ): Unit = {
@@ -179,34 +181,89 @@ object GuiProgramSix {
         title = "Game Engine"
 
         contents = new BoxPanel(Orientation.Vertical) {
-          override def paint(g: Graphics2D): Unit = {
-            Drawer(bgColor,rows,cols,color1,color2,shape,g);
 
-            for {
-              row <- 0 until 8
-              col <- 0 until 8
-            } {
-              val x = (col * 57) + 75
-              val y = (row * 57) + 75
-              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
-            }
-
-          }  
+          // override def paint(g: Graphics2D): Unit = {
+          //   Drawer(bgColor,rows,cols,color1,color2,shape,g);
+      
+          //   for {
+          //     row <- 0 until 8
+          //     col <- 0 until 8
+          //   } {
+          //     val x = (col * 57) + 75
+          //     val y = (row * 57) + 75
+          //     if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
+          //   }
+          // }  
 
           def readImage(img:String):BufferedImage = {
             val file = new File("src/main/resources/Chess/"+img+".png")
             val image = ImageIO.read(file)
             image
           }
+
+          //GUI
+          
+          contents += Swing.VStrut(100)
+          contents += Swing.Glue
+          contents += new FlowPanel{
+            
+            contents += new BoxPanel(Orientation.NoOrientation){
+              maximumSize = new Dimension(670,20)
+              preferredSize = new Dimension(670,20)
+              background = new Color(0xb1e9fe)
+
+              var str = ""
+              if(typ == 1)str = "Position"
+              else str = "Start Position"
+
+              contents += Swing.HStrut(10)          
+              contents += new Label(str){font = new Font("Segoe Print", 1, 16)}
+              contents += Swing.HStrut(27)
+              if(typ == 2)contents += new Label("end Position"){font = new Font("Segoe Print", 1, 16)}
+            }
+
+            contents += new BoxPanel(Orientation.NoOrientation){
+              maximumSize = new Dimension(670,20)
+              preferredSize = new Dimension(670,20)
+              background = new Color(0xb1e9fe)
+
+              var inputField1 = new TextField("")
+              var inputField2 = new TextField("")
+              //Adjust Size
+              inputField1.maximumSize = new Dimension(100,30)
+              inputField2.maximumSize = new Dimension(100,30)
+              //Adjust Font
+              inputField1.font = new Font("Arial", 0, 15)
+              inputField2.font = new Font("Arial", 0, 15)
+             
+              contents += Swing.HStrut(15)
+              contents += inputField1
+              contents += Swing.HStrut(35)
+              if(typ == 2)contents += inputField2
+              else contents += Swing.HStrut(100)
+
+              contents += Swing.HStrut(320)
+              contents += Button("Do Action!!") { 
+                  var input = inputField1.text+inputField2.text
+                  println(input) 
+                  //Controller(input(2))
+              }
+            }
+
+            background = new Color(0xb1e9fe)
+            maximumSize = new Dimension(700,80)
+            preferredSize = new Dimension(700,80)
+            border = Swing.TitledBorder(Swing.EtchedBorder(Swing.Lowered), "Input")
+          }
           
         }
 
         bounds = new Rectangle(700, 700)
-        background = new Color(0, 0, 0)
         centerOnScreen()
         resizable = false
         visible = true
       }
+
     }
   }
 }
