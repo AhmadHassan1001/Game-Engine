@@ -335,6 +335,12 @@ object GameEngine {
 
       contents = new BoxPanel(Orientation.Vertical) {
 
+        def readImage(img:String):BufferedImage = {
+            val file = new File("src/main/resources/MainMenu/"+img+".jpg")
+            val image = ImageIO.read(file)
+            image
+        }
+
         var j = 0;
         override def paint(g: Graphics2D): Unit = {
           var myFont = new Font("Courier New", 1, 20);
@@ -343,14 +349,15 @@ object GameEngine {
           g.setBackground(new Color(0xE5E1E6))
           g.clearRect(0,0,700,650);
           g.setColor(new Color(200,100,250))
+          g.drawImage(readImage(Games(j)),100,20,500,400,null)
 
           var i = 0;
           Games.foreach(x => {
-            g.drawString(x, 300, 300 + 50 * i)
+            g.drawString(x, 300, 450 + 30 * i)
             i += 1
           })
           
-          g.drawString(">", 270, 300 + 50 * j)
+          g.drawString(">", 270, 450 + 30 * j)
         }
 
         listenTo(keys)
