@@ -87,26 +87,122 @@ object GameEngine {
         g.drawString(oneString, x + tileSize / 2, tileSize * rows + 125)
       }
     }
-  
 
-    val Chess_Controller = (input: String) => {
-      if(input.size != 4) false
 
-      var start:Tuple2[Char,Int] = (input(0),input(1).asDigit)
-      var end  :Tuple2[Char,Int] = (input(2),input(3).asDigit)
+    def InBoard(input: String,rows:Int,cols:Int):Boolean = {
+
+      if(input.size != 4)false
+
+      var start:Tuple2[Int,Int] = (input(0)-'a'+1,input(1).asDigit)
+      if(start._1 <= 0 || start._1 > cols )false
+      if(start._2 <= 0 || start._2 > rows )false
+
+      if(input.size > 2) {
+        var end  :Tuple2[Int,Int] = (input(2)-'a'+1,input(3).asDigit)
+
+        if(end._1 <= 0 || end._1 > cols )false
+        if(end._2 <= 0 || end._2 > rows )false
+      }
 
       true
+    }
+
+    val Chess_Controller = (input: String,rows:Int,cols:Int,turn:Int /*0->Black,1->white*/) => {
+
+      if(!InBoard(input,rows,cols))false
+
+      var start:Tuple2[Int,Int] = (Math.abs(input(1).asDigit-rows),input(0)-'a')
+      var end  :Tuple2[Int,Int] = (Math.abs(input(3).asDigit-rows),input(2)-'a')
+      
+      if(chessBoard(start._1)(start._2) == null) false
+
+      if(chessBoard(start._1)(start._2) != null){
+        if(chessBoard(start._1)(start._2)._1 > 6 && turn == 1)false
+        if(chessBoard(start._1)(start._2)._1 < 6 && turn == 0)false
+      }
+
+      if(chessBoard(end._1)(end._2) != null){
+        if(chessBoard(end._1)(end._2)._1 > 6 && turn == 0)false
+        if(chessBoard(end._1)(end._2)._1 < 6 && turn == 1)false
+      }      
+
+      var peiceType = 1
+      if(chessBoard(start._1)(start._2) != null){
+        peiceType = chessBoard(start._1)(start._2)._1
+      }
+      
+
+      var deltaX = end._2 - start._2
+      var deltaY = end._1 - start._1
+      var dirX = 0
+      var dirY = 0
+      if(deltaX > 0)dirX = 1
+      else if(deltaX < 0)dirX = -1
+
+      if(deltaY > 0)dirY = 1
+      else if(deltaY < 0)dirY = -1
+
+      def rookMove():Boolean={
+
+        if(Math.abs(deltaY) > 0 && Math.abs(deltaX) > 0)false
+
+        var startY = start._1
+        var startX = start._2
+        var accept = true
+        while(startY != end._1 || startX != end._2){
+          startY += dirY
+          startX +=dirX
+        
+          if((chessBoard(startY)(startX) != null) && (startY != end._1 || startX != end._2)) 
+            accept = false         
+        }
+
+        accept
+      }
+
+      def knightMove():Boolean={
+        false
+      }
+
+      def bishopMove():Boolean={
+        false
+      }
+
+      def queenMove():Boolean={
+        false
+      }
+
+      def kingMove():Boolean={
+        false
+      }
+
+      def pawnMove():Boolean={
+        true
+      }
+
+      var valid = peiceType match{
+        case 1|7  => rookMove
+        case 2|8  => knightMove
+        case 3|9  => bishopMove
+        case 4|10 => queenMove
+        case 5|11 => kingMove
+        case 6|12 => pawnMove
+      }
+      
+      if(valid)true
+      else false
+
     }: Boolean
 
-    val Connect4_Controller = (input: String) => {true}: Boolean
+    val Connect4_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
-    val XO_Controller = (input: String) => {true}: Boolean
+    val XO_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
-    val Checkers_Controller = (input: String) => {true}: Boolean
+    val Checkers_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
-    val Queens_Controller = (input: String) => {true}: Boolean
+    val Queens_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
-    val Suduko_Controller = (input: String) => {true}: Boolean
+    val Suduko_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
     new MainFrame {
       title = "Game Engine"
@@ -182,7 +278,7 @@ object GameEngine {
     def abstractEngine(
         bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,typ:Int,
         Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
-        Controller: (String) => Boolean
+        Controller: (String,Int,Int,Int) => Boolean
     ): Unit = {
       new MainFrame(null) {
         title = "Game Engine"
@@ -253,20 +349,34 @@ object GameEngine {
               else contents += Swing.HStrut(100)
 
               contents += Swing.HStrut(320)
+
+              var turn = 0
               contents += Button("Do Action!!") { 
                   var s1 = inputField1.text
                   var s2 = inputField2.text
                   var input = s1+s2
                   println(input) 
 
-                  if(Controller(input)){
+                 
+                  if(Controller(input,rows,cols,turn)){
 
-                    chessBoard(s2(0)-'a')(s2(1).asDigit-1) = chessBoard(s1(0)-'a')(s1(1).asDigit-1)
-                    chessBoard(s1(0)-'a')(s1(1).asDigit-1) = null
+                    println("OK")
+                    println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
+                    println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
+                    chessBoard(Math.abs(s2(1).asDigit-rows))(s2(0)-'a') = chessBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')
+                    chessBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a') = null
+
                     canvas.repaint()
-                  }                 
+                  }
+                  else{
+                    println("Not valid")
+                  }
+
+                turn+=1
+                turn = turn%2         
               }
             }
+
             background = new Color(0xb1e9fe)
             maximumSize = new Dimension(700,80)
             preferredSize = new Dimension(700,80)
