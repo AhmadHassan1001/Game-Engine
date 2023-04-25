@@ -370,7 +370,11 @@ object GameEngine {
       }
       
       if(ret){  
-        if(valid )true
+        if(valid){
+          chessBoard(Math.abs(end._1))(end._2) = chessBoard(start._1)(start._2)
+          chessBoard(start._1)(start._2) = null
+          true
+        }
         else false
       }
       else{
@@ -585,11 +589,10 @@ object GameEngine {
 
                   if(Controller(input,rows,cols,turn)){
                     turnlabel.foreground = new Color(0x013220)
-                    println("OK")
-                    println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
-                    println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
-                    chessBoard(Math.abs(s2(1).asDigit-rows))(s2(0)-'a') = chessBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')
-                    chessBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a') = null
+                    /*For Debug*/
+                    // println("OK")
+                    // println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
+                    // println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
 
                     turn+=1
                     turn = turn%2  
@@ -616,7 +619,6 @@ object GameEngine {
                   else{
                     turnlabel.foreground = Color.RED
                     turnlabel.text = "Not valid"
-                    
                   }       
               }
             }
