@@ -9,7 +9,7 @@ class Controller {
         for(let key in this.actions){
             if(parselyEqual(action,key)){
                 let params=parse(action,key);
-                this.actions[key](this,...params);
+                this.actions[key](this.drawerMap,...params);
                 break;
             }
         }
