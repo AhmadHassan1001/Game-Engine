@@ -1,0 +1,4 @@
+Uri: jdt://contents/java.desktop/javax.imageio/ImageIO.class?%3Djdt.ls-java-project%2FC%3A%5C%2FProgram%20Files%5C%2FJava%5C%2Fjdk-19%5C%2Flib%5C%2Fjrt-fs.jar%60java.desktop%3D%2Fjavadoc_location%3D%2Fhttps%3A%5C%2F%5C%2Fdocs.oracle.com%5C%2Fen%5C%2Fjava%5C%2Fjavase%5C%2F19%5C%2Fdocs%5C%2Fapi%5C%2F%3D%2F%3Cjavax.imageio%28ImageIO.class
+
+Error message: Provider "jdt" not installed
+Error: java.nio.file.FileSystemNotFoundException: Provider "jdt" not installed

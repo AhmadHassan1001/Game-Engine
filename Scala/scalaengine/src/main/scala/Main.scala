@@ -26,8 +26,7 @@ object GameEngine {
       Array(0, 6, 0, 0, 0, 0, 2, 8, 0),
       Array(0, 0, 0, 4, 1, 9, 0, 0, 5),
       Array(0, 0, 0, 0, 8, 0, 0, 7, 9)
-  )
-
+    )
 
     //Chess Array
     var chessImageArrayW = Array((1,"RookWhite"),(2,"KnightWhite"),(3,"BishopWhite"),(4,"QueenWhite"),
@@ -41,7 +40,8 @@ object GameEngine {
     chessBoard(6) = Array.fill[Tuple2[Int,String]](8)(12,"PawnBlack")
     chessBoard(7) = chessImageArrayB  
 
-    var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
+
+    def AbstractDrawer (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) = {
 
       var width = 700;
       var height = 600;
@@ -67,25 +67,17 @@ object GameEngine {
         g.setColor(tileColor)
 
         shape match {
-          case "line" => {
-            if (row != rows - 1 && col != cols - 1) {
+          case "line" => 
+            if (row != rows - 1 && col != cols - 1) 
+            {
               // changes color every 3 steps for soduko
               if (((row + 1) * (col + 1)) % 3 == 0) g.setColor(color1)
               else g.setColor(color2)
-              g.drawLine(
-                x + tileSize,
-                75,
-                x + tileSize,
-                75 + (tileSize * (rows))
-              )
-              g.drawLine(
-                75,
-                y + tileSize,
-                75 + (tileSize * (cols)),
-                y + tileSize
-              )
+
+              g.drawLine(x + tileSize,75,x + tileSize,75 + (tileSize * (rows)))
+              g.drawLine(75,y + tileSize,75 + (tileSize * (cols)),y + tileSize)
             }
-          }
+          
           case "square" => g.fillRect(x, y, tileSize, tileSize)
           case "circle" => g.fillOval(x, y, tileSize, tileSize)
           case _ => throw new IllegalArgumentException(s"Unsupported shape: $shape")
@@ -102,41 +94,71 @@ object GameEngine {
       }
     }
 
-    var drawPeices = (gamename: String, rows: Int,  cols: Int, g: Graphics2D) => {
+    def readImage(img:String):BufferedImage = {
+      val file = new File("src/main/resources/"+"/"+img+".png")
+      val image = ImageIO.read(file)
+      image
+    }
 
-      def readImage(img:String):BufferedImage = {
-        val file = new File("src/main/resources/"+gamename+"/"+img+".png")
-        val image = ImageIO.read(file)
-        image
+    val Chess_Drawer = (g: Graphics2D) =>{
+      var rows = 8
+      var cols = 8
+      AbstractDrawer(Color.GRAY, rows, cols, new Color(0xC2B280), Color.WHITE, "square",g)
+
+      for {
+        row <- 0 until rows
+        col <- 0 until cols
+        } {
+        val x = (col * 57) + 75
+        val y = (row * 57) + 75
+        if(chessBoard(row)(col) != null) g.drawImage(readImage("Chess/"+chessBoard(row)(col)._2),x,y,50,50,null)
       }
+    }
 
-      gamename match {
-        case "Chess" =>{
-          for {
-          row <- 0 until rows
-          col <- 0 until cols
-          } {
-          val x = (col * 57) + 75
-          val y = (row * 57) + 75
-          if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
-          }
-        }
+    val Connect4_Drawer = (g: Graphics2D) => {
+      var rows = 6
+      var cols = 8
+      AbstractDrawer(Color.BLUE, rows, cols, Color.WHITE, Color.WHITE, "circle",g)
 
-        case "Suduko" =>{  
-          val font = new Font("Arial", 0, 30)
-          g.setFont(font)
-          for {
-          row <- 0 until rows+1
-          col <- 0 until cols+1
-          } {
-          val x = (col * 50) + 75 +16
-          val y = (row * 50) + 75 +34
-          if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
-          }
-        }
-        case "XO"|"Connect4"|"Checkers"|"8Queens" => {}
+      /*to be continued*/
+    }
+
+    val XO_Drawer = (g: Graphics2D) => {
+      var rows = 3
+      var cols = 3
+      AbstractDrawer(Color.BLACK, rows, cols, Color.YELLOW, Color.YELLOW, "line",g)
+      /*to be continued*/
+    }
+
+    val Checkers_Drawer = (g: Graphics2D) => {
+      var rows = 8
+      var cols = 8
+      AbstractDrawer(Color.DARK_GRAY, rows, cols, new Color(0xC2B280), Color.WHITE,"square",g)
+      /*to be continued*/
+    }
+
+    val Queens_Drawer = (g: Graphics2D) => {
+      var rows = 8
+      var cols = 8
+      AbstractDrawer(Color.DARK_GRAY, rows, cols, new Color(0xC2B280), Color.WHITE, "square",g)
+      /*to be continued*/
+    }
+
+    val Suduko_Drawer = (g: Graphics2D) =>{
+      var rows = 9
+      var cols = 9
+      AbstractDrawer(Color.LIGHT_GRAY, rows, cols, Color.BLACK, Color.WHITE, "line",g)
+
+      val font = new Font("Arial", 0, 30)
+        g.setFont(font)
+        for {
+        row <- 0 until rows
+        col <- 0 until cols
+        } {
+        val x = (col * 50) + 75 +16
+        val y = (row * 50) + 75 +34
+        if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
       }
-
     }
 
     /*Check if a given coordinates is in the board or out*/
@@ -397,32 +419,32 @@ object GameEngine {
       title = "Game Engine"
       
       val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
+      val gamesCnt = Games.size
 
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
+        var j = 0; //to move Selector arrow
 
         def readImage(img:String):BufferedImage = {
-            val file = new File("src/main/resources/MainMenu/"+img+".jpg")
-            val image = ImageIO.read(file)
-            image
+          val file = new File("src/main/resources/MainMenu/"+img+".jpg")
+          val image = ImageIO.read(file)
+          image
         }
-        var j = 0;
-        //game options
         override def paint(g: Graphics2D): Unit = {
           var myFont = new Font("Arial", 1, 16);
           g.setFont(myFont)
           g.setBackground(new Color(0xffffff))
-          g.clearRect(0,0,700,600);
+          g.clearRect(0,0,700,600)
           g.setColor(new Color(0x000000))
           g.drawImage(readImage(Games(j)),20,20,660,300,null) //660*300 image
 
           var i = 0;
           Games.foreach(x => {
-            g.drawString(x, 300, 360 + 35 * i)
+            g.drawString(x, 300, 340 + 35 * i)
             i += 1
           })
           
-          g.drawString(">", 270, 360 + 35 * j)
+          g.drawString(">", 270, 340 + 35 * j)
         }
         //movment
         listenTo(keys)
@@ -436,13 +458,13 @@ object GameEngine {
             
             case Key.S =>{
               j+=1;
-              if(j == 6)j=0;
+              if(j == gamesCnt)j=0;
               repaint()
             }
 
             case Key.W =>{
               j-=1;
-              if(j < 0)j=5;
+              if(j < 0)j=gamesCnt-1;
               repaint()
             }
 
@@ -450,12 +472,12 @@ object GameEngine {
               input = Games(j);
               
               input match {
-                  case "Chess"    => abstractEngine(Color.GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",input,drawBoard,Chess_Controller)
-                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",input,drawBoard,Queens_Controller)
-                  case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",input,drawBoard,Connect4_Controller)
-                  case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",input,drawBoard,XO_Controller)
-                  case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",input,drawBoard,Suduko_Controller)
-                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE,"square",input,drawBoard,Checkers_Controller)
+                case "Chess"    => abstractEngine(input,8,8,Chess_Drawer,Chess_Controller)
+                case "8Queens"  => abstractEngine(input,8,8,Queens_Drawer,Queens_Controller)
+                case "Connect4" => abstractEngine(input,6,8,Connect4_Drawer,Connect4_Controller)
+                case "XO"       => abstractEngine(input,3,3,XO_Drawer,XO_Controller)
+                case "Suduko"   => abstractEngine(input,9,9,Suduko_Drawer,Suduko_Controller)
+                case "Checkers" => abstractEngine(input,8,8,Checkers_Drawer,Checkers_Controller)
               }
 
               dispose()
@@ -473,23 +495,17 @@ object GameEngine {
     }
 
     def abstractEngine(
-        bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,
-        shape: String,gameName:String,
-        Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
+        gameName:String,rows:Int,cols:Int,
+        Drawer: (Graphics2D) => Unit,
         Controller: (String,Int,Int,Int) => Boolean
     ): Unit = {
-
       new MainFrame(null) {
-        title = "Game Engine"
+        title = gameName
         class Canvas extends Component {
 
           preferredSize = new Dimension(700, 600)
           override def paint(g: Graphics2D): Unit = {
-
-            Drawer(bgColor,rows,cols,color1,color2,shape,g);
-            
-            drawPeices(gameName,rows,cols,g)
-
+            Drawer(g);
           }       
         }  
 
@@ -581,8 +597,6 @@ object GameEngine {
                   var s2 = inputField2.text
                   var input = s1+s2
                   println(input) 
-
-                  
                   // sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
                   // canvas.repaint()
 
@@ -596,17 +610,18 @@ object GameEngine {
                     turn+=1
                     turn = turn%2  
 
-                    if(turn%2 == 0){
-                      
-                      gameName match{
-                        case "Chess"|"8Queens"|"Checkers" => turnlabel.text = "Black's  Turn"
-                        case "XO" | "Connect4" => turnlabel.text = "Player's 1 Turn"
+                    if(turn%2 == 0)
+                    {
+                      turnlabel.text = gameName match{
+                        case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
+                        case "XO" | "Connect4" => "Player's 1 Turn"
                       }
                     } 
-                    else {
-                      gameName match{
-                        case "Chess"|"8Queens"|"Checkers" => turnlabel.text = "White's  Turn"
-                        case "XO" | "Connect4" => turnlabel.text = "Player's 2 Turn"
+                    else 
+                    {
+                      turnlabel.text = gameName match{
+                        case "Chess"|"8Queens"|"Checkers" => "White's  Turn"
+                        case "XO" | "Connect4" => "Player's 2 Turn"
                       }
                     }
                     //Reset Input Fields After each Move
