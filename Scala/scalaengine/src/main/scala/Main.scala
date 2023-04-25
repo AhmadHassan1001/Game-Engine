@@ -463,10 +463,10 @@ object GameEngine {
       }
 
       background = new Color(0xf2d16b)
-      centerOnScreen
       visible = true
       size = new Dimension(716, 600) //not 700 to make place for the border error pixels
       resizable = false
+      centerOnScreen
     }
 
     def abstractEngine(
@@ -580,8 +580,8 @@ object GameEngine {
                   println(input) 
 
                   
-                  sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
-                  canvas.repaint()
+                  // sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
+                  // canvas.repaint()
 
                   if(Controller(input,rows,cols,turn)){
                     turnlabel.foreground = new Color(0x013220)
