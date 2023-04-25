@@ -103,40 +103,39 @@ object GameEngine {
     }
 
     var drawPeices = (gamename: String, rows: Int,  cols: Int, g: Graphics2D) => {
-  
 
-          def readImage(img:String):BufferedImage = {
-            val file = new File("src/main/resources/"+gamename+"/"+img+".png")
-            val image = ImageIO.read(file)
-            image
+      def readImage(img:String):BufferedImage = {
+        val file = new File("src/main/resources/"+gamename+"/"+img+".png")
+        val image = ImageIO.read(file)
+        image
+      }
+
+      gamename match {
+        case "Chess" =>{
+          for {
+          row <- 0 until rows
+          col <- 0 until cols
+          } {
+          val x = (col * 57) + 75
+          val y = (row * 57) + 75
+          if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
           }
+        }
 
-          gamename match {
-            case "Chess" =>{
-              for {
-              row <- 0 until rows
-              col <- 0 until cols
-              } {
-              val x = (col * 57) + 75
-              val y = (row * 57) + 75
-              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
-              }
-            }
-
-            case "Suduko" =>{  
-              val font = new Font("Arial", 0, 30)
-              g.setFont(font)
-              for {
-              row <- 0 until rows+1
-              col <- 0 until cols+1
-              } {
-              val x = (col * 50) + 75 +16
-              val y = (row * 50) + 75 +34
-              if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
-              }
-            }
-            case "XO"|"Connect4"|"Checkers"|"8Queens" => {}
+        case "Suduko" =>{  
+          val font = new Font("Arial", 0, 30)
+          g.setFont(font)
+          for {
+          row <- 0 until rows+1
+          col <- 0 until cols+1
+          } {
+          val x = (col * 50) + 75 +16
+          val y = (row * 50) + 75 +34
+          if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
           }
+        }
+        case "XO"|"Connect4"|"Checkers"|"8Queens" => {}
+      }
 
     }
 
@@ -489,7 +488,7 @@ object GameEngine {
 
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
             
-            drawPeices(gameName,8,8,g)
+            drawPeices(gameName,rows,cols,g)
 
           }       
         }  
