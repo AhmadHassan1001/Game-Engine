@@ -103,40 +103,39 @@ object GameEngine {
     }
 
     var drawPeices = (gamename: String, rows: Int,  cols: Int, g: Graphics2D) => {
-  
 
-          def readImage(img:String):BufferedImage = {
-            val file = new File("src/main/resources/"+gamename+"/"+img+".png")
-            val image = ImageIO.read(file)
-            image
+      def readImage(img:String):BufferedImage = {
+        val file = new File("src/main/resources/"+gamename+"/"+img+".png")
+        val image = ImageIO.read(file)
+        image
+      }
+
+      gamename match {
+        case "Chess" =>{
+          for {
+          row <- 0 until rows
+          col <- 0 until cols
+          } {
+          val x = (col * 57) + 75
+          val y = (row * 57) + 75
+          if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
           }
+        }
 
-          gamename match {
-            case "Chess" =>{
-              for {
-              row <- 0 until rows
-              col <- 0 until cols
-              } {
-              val x = (col * 57) + 75
-              val y = (row * 57) + 75
-              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
-              }
-            }
-
-            case "Suduko" =>{  
-              val font = new Font("Arial", 0, 30)
-              g.setFont(font)
-              for {
-              row <- 0 until rows+1
-              col <- 0 until cols+1
-              } {
-              val x = (col * 50) + 75 +16
-              val y = (row * 50) + 75 +34
-              if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
-              }
-            }
-            case "XO"|"Connect4"|"Checkers"|"8Queens" => {}
+        case "Suduko" =>{  
+          val font = new Font("Arial", 0, 30)
+          g.setFont(font)
+          for {
+          row <- 0 until rows+1
+          col <- 0 until cols+1
+          } {
+          val x = (col * 50) + 75 +16
+          val y = (row * 50) + 75 +34
+          if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
           }
+        }
+        case "XO"|"Connect4"|"Checkers"|"8Queens" => {}
+      }
 
     }
 
@@ -370,7 +369,11 @@ object GameEngine {
       }
       
       if(ret){  
-        if(valid )true
+        if(valid){
+          chessBoard(Math.abs(end._1))(end._2) = chessBoard(start._1)(start._2)
+          chessBoard(start._1)(start._2) = null
+          true
+        }
         else false
       }
       else{
@@ -463,10 +466,10 @@ object GameEngine {
       }
 
       background = new Color(0xf2d16b)
-      centerOnScreen
       visible = true
       size = new Dimension(716, 600) //not 700 to make place for the border error pixels
       resizable = false
+      centerOnScreen
     }
 
     def abstractEngine(
@@ -485,7 +488,7 @@ object GameEngine {
 
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
             
-            drawPeices(gameName,8,8,g)
+            drawPeices(gameName,rows,cols,g)
 
           }       
         }  
@@ -580,16 +583,15 @@ object GameEngine {
                   println(input) 
 
                   
-                  sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
-                  canvas.repaint()
+                  // sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
+                  // canvas.repaint()
 
                   if(Controller(input,rows,cols,turn)){
                     turnlabel.foreground = new Color(0x013220)
-                    println("OK")
-                    println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
-                    println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
-                    chessBoard(Math.abs(s2(1).asDigit-rows))(s2(0)-'a') = chessBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')
-                    chessBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a') = null
+                    /*For Debug*/
+                    // println("OK")
+                    // println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
+                    // println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
 
                     turn+=1
                     turn = turn%2  
@@ -616,7 +618,6 @@ object GameEngine {
                   else{
                     turnlabel.foreground = Color.RED
                     turnlabel.text = "Not valid"
-                    
                   }       
               }
             }
