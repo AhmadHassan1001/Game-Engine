@@ -111,7 +111,7 @@ object GameEngine {
 
       //Check if Start and end Position are in Board*/
       var ret = true
-      if(!InBoard(input,rows,cols))ret =  false
+      if(!InBoard(input,rows,cols))ret = false
 
       /*tuples containing position of peice in the Chess array (row,column)*/
       var start:Tuple2[Int,Int] = (Math.abs(input(1).asDigit-rows),input(0)-'a')
@@ -134,7 +134,6 @@ object GameEngine {
       if(chessBoard(end._1)(end._2) != null)
       {
         /*if peice at end position is Black and it's Black turn then return false*/
-        println(chessBoard(end._1)(end._2)._1)
         if(chessBoard(end._1)(end._2)._1 > 6 && turn == 0)ret = false
 
         /*if peice at end position is White and it's white turn then return false*/
@@ -282,7 +281,7 @@ object GameEngine {
           //Black pawn moves diagonally right by 1
           if(deltaY == -1 && deltaX == 1 && chessBoard(startY-1)(startX+1) != null)accept = true
           //Black pawn moves up by 2 at first move
-          if(deltaY == -2 && startY == 6 && chessBoard(startY-2)(startX) == null && chessBoard(startY-1)(startX) == null)accept = true
+          if(deltaY == -2 && startY == 6 && deltaX == 0 && chessBoard(startY-2)(startX) == null && chessBoard(startY-1)(startX) == null)accept = true
         }
         else{
           //White pawn moves up by 1
@@ -292,7 +291,7 @@ object GameEngine {
           //White pawn moves diagonally right by 1
           if(deltaY == 1 && deltaX == 1 && chessBoard(startY+1)(startX+1) != null)accept = true
           //White pawn moves up by 2 at first move
-          if(deltaY == 2 && startY == 1 && chessBoard(startY+2)(startX) == null && chessBoard(startY+1)(startX) == null)accept = true
+          if(deltaY == 2 && startY == 1 && deltaX == 0 && chessBoard(startY+2)(startX) == null && chessBoard(startY+1)(startX) == null)accept = true
         }
       
         accept
@@ -526,6 +525,10 @@ object GameEngine {
                         case "XO" | "Connect4" => label.text = "Player's 2 Turn"
                       }
                     }
+                    //Reset Input Fields After each Move
+                    inputField1.text =""
+                    inputField2.text =""
+
                     canvas.repaint()
                   }
                   else{
