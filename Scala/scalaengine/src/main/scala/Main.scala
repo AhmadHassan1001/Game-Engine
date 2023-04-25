@@ -12,7 +12,21 @@ import java.awt
 object GameEngine {
 
   def main(args: Array[String]): Unit = {
-    var input = "Connect4"
+
+    var input = "Connect4" //dummy
+
+    val sudukoBoard: Array[Array[Int]] = Array(
+      Array(5, 3, 0, 0, 7, 0, 0, 0, 0),
+      Array(6, 0, 0, 1, 9, 5, 0, 0, 0),
+      Array(0, 9, 8, 0, 0, 0, 0, 6, 0),
+      Array(8, 0, 0, 0, 6, 0, 0, 0, 3),
+      Array(4, 0, 0, 8, 0, 3, 0, 0, 1),
+      Array(7, 0, 0, 0, 2, 0, 0, 0, 6),
+      Array(0, 6, 0, 0, 0, 0, 2, 8, 0),
+      Array(0, 0, 0, 4, 1, 9, 0, 0, 5),
+      Array(0, 0, 0, 0, 8, 0, 0, 7, 9)
+  )
+
 
     //Chess Array
     var chessImageArrayW = Array((1,"RookWhite"),(2,"KnightWhite"),(3,"BishopWhite"),(4,"QueenWhite"),
@@ -26,7 +40,6 @@ object GameEngine {
     chessBoard(6) = Array.fill[Tuple2[Int,String]](8)(12,"PawnBlack")
     chessBoard(7) = chessImageArrayB  
 
-    
     var drawBoard = (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) => {
 
       var width = 700;
@@ -77,15 +90,54 @@ object GameEngine {
           case _ => throw new IllegalArgumentException(s"Unsupported shape: $shape")
         }
 
-        val aChar = ('a' + row).toChar
-        val aString = s"$aChar"
-        val oneString = s"${col + 1}"
+        val aChar = ('a' + col).toChar
+        val letterString = s"$aChar"
+        val numberString = s"${rows - row }"
         g.setColor(Color.BLACK)
-        g.drawString(aString, 25, y + tileSize / 2)
-        g.drawString(oneString, x + tileSize / 2, 25)
-        g.drawString(aString, tileSize * cols + 125, y + tileSize / 2)
-        g.drawString(oneString, x + tileSize / 2, tileSize * rows + 125)
+        g.drawString(numberString, 25, (y + tileSize / 2))
+        g.drawString(numberString, (tileSize * cols + 125), (y + tileSize / 2))
+        g.drawString(letterString, (x + tileSize / 2), 25)
+        g.drawString(letterString, (x + tileSize / 2), (tileSize * rows + 125))
       }
+    }
+
+    var drawPeices = (gamename: String, rows: Int,  cols: Int, g: Graphics2D) => {
+  
+
+          def readImage(img:String):BufferedImage = {
+            val file = new File("src/main/resources/"+gamename+"/"+img+".png")
+            val image = ImageIO.read(file)
+            image
+          }
+
+          gamename match {
+            case "Chess" =>{
+              for {
+              row <- 0 until rows
+              col <- 0 until cols
+              } {
+              val x = (col * 57) + 75
+              val y = (row * 57) + 75
+              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
+              }
+            }
+            case "Suduko" =>{
+              
+              val font = new Font("Arial", 0, 30)
+              g.setFont(font)
+
+              for {
+              row <- 0 until rows+1
+              col <- 0 until cols+1
+              } {
+              val x = (col * 50) + 75 +16
+              val y = (row * 50) + 75 +34
+              if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
+              }
+            }
+            case "XO"|"Connect4"|"Checkers"|"8Queens" => {}
+          }
+
     }
 
     /*Check if a given coordinates is in the board or out*/
@@ -99,10 +151,20 @@ object GameEngine {
 
       if(input.size > 2) {
         var end  :Tuple2[Int,Int] = (input(2)-'a'+1,input(3).asDigit)
-
         if(end._1 <= 0 || end._1 > cols )false
         if(end._2 <= 0 || end._2 > rows )false
       }
+
+      true
+    }
+
+    /* checks for 1 input at a time eg "a1" only*/
+    def InBoardo(input: String,rows:Int,cols:Int):Boolean = {
+      if(input.size != 4)false
+
+      var checker:Tuple2[Int,Int] = (input(0)-'a'+1,input(1).asDigit)
+      if(checker._1 <= 0 || checker._1 > cols )false
+      if(checker._2 <= 0 || checker._2 > rows )false
 
       true
     }
@@ -328,11 +390,13 @@ object GameEngine {
 
     val Suduko_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
+    //start menu
     new MainFrame {
       title = "Game Engine"
-
+      
       val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
 
+      //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
 
         def readImage(img:String):BufferedImage = {
@@ -340,26 +404,25 @@ object GameEngine {
             val image = ImageIO.read(file)
             image
         }
-
         var j = 0;
+        //game options
         override def paint(g: Graphics2D): Unit = {
           var myFont = new Font("Courier New", 1, 20);
           g.setFont(myFont)
-
           g.setBackground(new Color(0xE5E1E6))
-          g.clearRect(0,0,700,650);
+          g.clearRect(0,0,700,600);
           g.setColor(new Color(200,100,250))
-          g.drawImage(readImage(Games(j)),100,20,500,400,null)
+          g.drawImage(readImage(Games(j)),20,20,660,300,null) //660*300 image
 
           var i = 0;
           Games.foreach(x => {
-            g.drawString(x, 300, 450 + 30 * i)
+            g.drawString(x, 300, 360 + 35 * i)
             i += 1
           })
           
-          g.drawString(">", 270, 450 + 30 * j)
+          g.drawString(">", 270, 360 + 35 * j)
         }
-
+        //movment
         listenTo(keys)
         listenTo(mouse.clicks)
 
@@ -400,10 +463,11 @@ object GameEngine {
         }
       }
 
-      size = new Dimension(700, 650)
       background = new Color(0xf2d16b)
-      centerOnScreen
+      //centerOnScreen
       visible = true
+      size = new Dimension(716, 600) //not 700 to make place for the border error pixels
+      resizable = false
     }
 
     def abstractEngine(
@@ -412,29 +476,19 @@ object GameEngine {
         Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
         Controller: (String,Int,Int,Int) => Boolean
     ): Unit = {
+
       new MainFrame(null) {
         title = "Game Engine"
         class Canvas extends Component {
+
           preferredSize = new Dimension(700, 600)
           override def paint(g: Graphics2D): Unit = {
 
             Drawer(bgColor,rows,cols,color1,color2,shape,g);
             
-            for {
-              row <- 0 until 8
-              col <- 0 until 8
-            } {
-              val x = (col * 57) + 75
-              val y = (row * 57) + 75
-              if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
-            }
+            drawPeices(gameName,8,8,g)
+
           }       
-          
-          def readImage(img:String):BufferedImage = {
-            val file = new File("src/main/resources/Chess/"+img+".png")
-            val image = ImageIO.read(file)
-            image
-          }
         }  
 
         //GUI
@@ -445,6 +499,7 @@ object GameEngine {
           contents += Swing.Glue
           contents += new FlowPanel{
   
+            //text panel
             contents += new BoxPanel(Orientation.NoOrientation){
               maximumSize = new Dimension(670,20)
               preferredSize = new Dimension(670,20)
@@ -454,12 +509,13 @@ object GameEngine {
               if(typ == 1)str = "Position"
               else str = "Start Position"
 
-              contents += Swing.HStrut(10)          
-              contents += new Label(str){font = new Font("Segoe Print", 1, 16)}
-              contents += Swing.HStrut(27)
-              if(typ == 2)contents += new Label("end Position"){font = new Font("Segoe Print", 1, 16)}
+              contents += Swing.HStrut(20)          
+              contents += new Label(str){font = new Font("Arial", 1, 12)}
+              contents += Swing.HStrut(40)
+              if(typ == 2)contents += new Label("end Position"){font = new Font("Arial", 1, 12)}
             }
-
+            
+            //input panel
             contents += new BoxPanel(Orientation.NoOrientation){
               maximumSize = new Dimension(670,20)
               preferredSize = new Dimension(670,20)
@@ -467,7 +523,7 @@ object GameEngine {
 
               var txt = gameName match{
                 case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
-                case "XO" | "Connect4" => "Player's 1 Turn"
+                case "XO" | "Connect4"|"Suduko" => "Player's 1 Turn"
               }
 
               var inputField1 = new TextField("")
@@ -480,22 +536,23 @@ object GameEngine {
               inputField1.font = new Font("Arial", 0, 15)
               inputField2.font = new Font("Arial", 0, 15)
               //label adj
-              label.maximumSize = new Dimension(100,20)
+              label.maximumSize = new Dimension(200,20)
               label.font = new Font("Arial", 1, 15)
               label.foreground = new Color(0x013220)
              
-              contents += Swing.HStrut(15)
+              contents += Swing.HStrut(20)
               contents += inputField1
-              contents += Swing.HStrut(35)
+              contents += Swing.HStrut(20)
               
               if(typ == 2)contents += inputField2
               else contents += Swing.HStrut(100)
 
-              contents += Swing.HStrut(80)
+              contents += Swing.HStrut(50)
               contents += label
-              contents += Swing.HStrut(140)
+              contents += Swing.HStrut(100)
 
               var turn = 0
+              //input handeling
               contents += Button("Do Action!!") { 
                   var s1 = inputField1.text
                   var s2 = inputField2.text
@@ -504,7 +561,7 @@ object GameEngine {
 
                  
                   if(Controller(input,rows,cols,turn)){
-
+                    label.foreground = new Color(0x013220)
                     println("OK")
                     println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
                     println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
@@ -515,6 +572,7 @@ object GameEngine {
                     turn = turn%2  
 
                     if(turn%2 == 0){
+                      
                       gameName match{
                         case "Chess"|"8Queens"|"Checkers" => label.text = "Black's  Turn"
                         case "XO" | "Connect4" => label.text = "Player's 1 Turn"
@@ -531,7 +589,7 @@ object GameEngine {
                   else{
                     label.foreground = Color.RED
                     label.text = "Not valid"
-                    label.foreground = new Color(0x013220)
+                    
                   }       
               }
             }
@@ -542,6 +600,7 @@ object GameEngine {
             border = Swing.TitledBorder(Swing.EtchedBorder(Swing.Lowered), "Input")
           } 
         }
+        
         bounds = new Rectangle(700, 700)
         centerOnScreen()
         resizable = false
