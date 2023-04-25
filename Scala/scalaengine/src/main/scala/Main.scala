@@ -152,8 +152,8 @@ object GameEngine {
       val font = new Font("Arial", 0, 30)
         g.setFont(font)
         for {
-        row <- 0 until rows+1
-        col <- 0 until cols+1
+        row <- 0 until rows
+        col <- 0 until cols
         } {
         val x = (col * 50) + 75 +16
         val y = (row * 50) + 75 +34
@@ -505,7 +505,6 @@ object GameEngine {
 
           preferredSize = new Dimension(700, 600)
           override def paint(g: Graphics2D): Unit = {
-
             Drawer(g);
           }       
         }  
@@ -598,8 +597,6 @@ object GameEngine {
                   var s2 = inputField2.text
                   var input = s1+s2
                   println(input) 
-
-                  
                   // sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
                   // canvas.repaint()
 
@@ -613,17 +610,18 @@ object GameEngine {
                     turn+=1
                     turn = turn%2  
 
-                    if(turn%2 == 0){
-                      
-                      gameName match{
-                        case "Chess"|"8Queens"|"Checkers" => turnlabel.text = "Black's  Turn"
-                        case "XO" | "Connect4" => turnlabel.text = "Player's 1 Turn"
+                    if(turn%2 == 0)
+                    {
+                      turnlabel.text = gameName match{
+                        case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
+                        case "XO" | "Connect4" => "Player's 1 Turn"
                       }
                     } 
-                    else {
-                      gameName match{
-                        case "Chess"|"8Queens"|"Checkers" => turnlabel.text = "White's  Turn"
-                        case "XO" | "Connect4" => turnlabel.text = "Player's 2 Turn"
+                    else 
+                    {
+                      turnlabel.text = gameName match{
+                        case "Chess"|"8Queens"|"Checkers" => "White's  Turn"
+                        case "XO" | "Connect4" => "Player's 2 Turn"
                       }
                     }
                     //Reset Input Fields After each Move
