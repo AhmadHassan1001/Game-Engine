@@ -7,6 +7,7 @@ import javax.imageio.ImageIO
 import java.io.FileInputStream
 import java.io.File
 import javax.swing.border.Border
+import javax.swing.SwingConstants
 import java.awt
 
 object GameEngine {
@@ -121,11 +122,10 @@ object GameEngine {
               if(chessBoard(row)(col) != null) g.drawImage(readImage(chessBoard(row)(col)._2),x,y,50,50,null)
               }
             }
-            case "Suduko" =>{
-              
+
+            case "Suduko" =>{  
               val font = new Font("Arial", 0, 30)
               g.setFont(font)
-
               for {
               row <- 0 until rows+1
               col <- 0 until cols+1
@@ -407,11 +407,11 @@ object GameEngine {
         var j = 0;
         //game options
         override def paint(g: Graphics2D): Unit = {
-          var myFont = new Font("Courier New", 1, 20);
+          var myFont = new Font("Arial", 1, 16);
           g.setFont(myFont)
-          g.setBackground(new Color(0xE5E1E6))
+          g.setBackground(new Color(0xffffff))
           g.clearRect(0,0,700,600);
-          g.setColor(new Color(200,100,250))
+          g.setColor(new Color(0x000000))
           g.drawImage(readImage(Games(j)),20,20,660,300,null) //660*300 image
 
           var i = 0;
@@ -448,12 +448,12 @@ object GameEngine {
               input = Games(j);
               
               input match {
-                  case "Chess"    => abstractEngine(Color.GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",2,input,drawBoard,Chess_Controller)
-                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",2,input,drawBoard,Queens_Controller)
-                  case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",1,input,drawBoard,Connect4_Controller)
-                  case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",1,input,drawBoard,XO_Controller)
-                  case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",1,input,drawBoard,Suduko_Controller)
-                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE,"square",2,input,drawBoard,Checkers_Controller)
+                  case "Chess"    => abstractEngine(Color.GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",input,drawBoard,Chess_Controller)
+                  case "8Queens"  => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE, "square",input,drawBoard,Queens_Controller)
+                  case "Connect4" => abstractEngine(Color.BLUE, 6, 8, Color.WHITE, Color.WHITE, "circle",input,drawBoard,Connect4_Controller)
+                  case "XO"       => abstractEngine(Color.BLACK, 3, 3, Color.YELLOW, Color.YELLOW, "line",input,drawBoard,XO_Controller)
+                  case "Suduko"   => abstractEngine(Color.LIGHT_GRAY, 9, 9, Color.BLACK, Color.WHITE, "line",input,drawBoard,Suduko_Controller)
+                  case "Checkers" => abstractEngine(Color.DARK_GRAY, 8, 8, new Color(0xC2B280), Color.WHITE,"square",input,drawBoard,Checkers_Controller)
               }
 
               dispose()
@@ -464,7 +464,7 @@ object GameEngine {
       }
 
       background = new Color(0xf2d16b)
-      //centerOnScreen
+      centerOnScreen
       visible = true
       size = new Dimension(716, 600) //not 700 to make place for the border error pixels
       resizable = false
@@ -472,7 +472,7 @@ object GameEngine {
 
     def abstractEngine(
         bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,
-        shape: String,typ:Int,gameName:String,
+        shape: String,gameName:String,
         Drawer: (Color,Int,Int,Color,Color,String,Graphics2D) => Unit,
         Controller: (String,Int,Int,Int) => Boolean
     ): Unit = {
@@ -505,14 +505,28 @@ object GameEngine {
               preferredSize = new Dimension(670,20)
               background = new Color(0xb1e9fe)
 
-              var str = ""
-              if(typ == 1)str = "Position"
-              else str = "Start Position"
+              var str = gameName match{
+                case "Chess"|"8Queens"|"Checkers" => "Start Position"
+                case "XO" | "Connect4" |"Suduko" => "Position"
+              }
 
-              contents += Swing.HStrut(20)          
-              contents += new Label(str){font = new Font("Arial", 1, 12)}
-              contents += Swing.HStrut(40)
-              if(typ == 2)contents += new Label("end Position"){font = new Font("Arial", 1, 12)}
+              contents += Swing.HStrut(20)
+              val firstLabel = new Label(str){font = new Font("Arial", 1, 12)}
+              firstLabel.maximumSize = new Dimension(100,20)
+              firstLabel.horizontalAlignment = Alignment.Left
+              contents += firstLabel
+              contents += Swing.HStrut(20)
+
+              gameName match {
+                case "Chess" => {
+                  contents += new Label("end Position"){font = new Font("Arial", 1, 12)}
+                }
+                case "Suduko" => {
+                  contents += new Label("value"){font = new Font("Arial", 1, 12)}
+                }
+                case "8Queens"|"Checkers"|"XO" | "Connect4" =>{}
+              }
+
             }
             
             //input panel
@@ -523,12 +537,13 @@ object GameEngine {
 
               var txt = gameName match{
                 case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
-                case "XO" | "Connect4"|"Suduko" => "Player's 1 Turn"
+                case "XO" | "Connect4" => "Player's 1 Turn"
+                case "Suduko" =>""
               }
 
               var inputField1 = new TextField("")
               var inputField2 = new TextField("")
-              var label = new Label(txt)
+              var turnlabel = new Label(txt)
               //Adjust Size
               inputField1.maximumSize = new Dimension(100,30)
               inputField2.maximumSize = new Dimension(100,30)
@@ -536,19 +551,25 @@ object GameEngine {
               inputField1.font = new Font("Arial", 0, 15)
               inputField2.font = new Font("Arial", 0, 15)
               //label adj
-              label.maximumSize = new Dimension(200,20)
-              label.font = new Font("Arial", 1, 15)
-              label.foreground = new Color(0x013220)
+              turnlabel.maximumSize = new Dimension(200,20)
+              turnlabel.font = new Font("Arial", 1, 15)
+              turnlabel.foreground = new Color(0x013220)
              
               contents += Swing.HStrut(20)
               contents += inputField1
               contents += Swing.HStrut(20)
               
-              if(typ == 2)contents += inputField2
-              else contents += Swing.HStrut(100)
+              gameName match {
+                case "Chess"|"Suduko" => {
+                  contents += inputField2
+                }
+                case "8Queens"|"Checkers"|"XO"|"Connect4" =>{
+                  contents += Swing.HStrut(100)
+                }
+              }
 
               contents += Swing.HStrut(50)
-              contents += label
+              contents += turnlabel
               contents += Swing.HStrut(100)
 
               var turn = 0
@@ -559,9 +580,12 @@ object GameEngine {
                   var input = s1+s2
                   println(input) 
 
-                 
+                  
+                  sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
+                  canvas.repaint()
+
                   if(Controller(input,rows,cols,turn)){
-                    label.foreground = new Color(0x013220)
+                    turnlabel.foreground = new Color(0x013220)
                     println("OK")
                     println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
                     println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
@@ -574,21 +598,21 @@ object GameEngine {
                     if(turn%2 == 0){
                       
                       gameName match{
-                        case "Chess"|"8Queens"|"Checkers" => label.text = "Black's  Turn"
-                        case "XO" | "Connect4" => label.text = "Player's 1 Turn"
+                        case "Chess"|"8Queens"|"Checkers" => turnlabel.text = "Black's  Turn"
+                        case "XO" | "Connect4" => turnlabel.text = "Player's 1 Turn"
                       }
                     } 
                     else {
                       gameName match{
-                        case "Chess"|"8Queens"|"Checkers" => label.text = "White's  Turn"
-                        case "XO" | "Connect4" => label.text = "Player's 2 Turn"
+                        case "Chess"|"8Queens"|"Checkers" => turnlabel.text = "White's  Turn"
+                        case "XO" | "Connect4" => turnlabel.text = "Player's 2 Turn"
                       }
                     }
                     canvas.repaint()
                   }
                   else{
-                    label.foreground = Color.RED
-                    label.text = "Not valid"
+                    turnlabel.foreground = Color.RED
+                    turnlabel.text = "Not valid"
                     
                   }       
               }
