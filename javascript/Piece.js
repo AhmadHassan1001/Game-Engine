@@ -15,7 +15,7 @@ class ChessPiece extends Piece {
     }
 }
 
-class Connect4Piece {
+class ConnectFourPiece {
     
     constructor() {
         this.colour = 'rgba(255, 255, 255, 255)';

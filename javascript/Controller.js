@@ -1,8 +1,17 @@
 class Controller {
-    drawerMap=null
-    constructor(drawerMap,actions) {
+    constructor(actions, rows, columns) {
         this.actions=actions;// actions that user can do with its validations
-        this.drawerMap=drawerMap;
+
+        this.rows = rows;
+        this.columns = columns;
+
+        this.drawerMap = [];
+        for (let i = 0; i < this.rows; i++)
+            this.drawerMap.push([]);
+    
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.columns; j++)
+                this.drawerMap[i].push(null);
     }
 
     run(action){

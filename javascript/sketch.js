@@ -4,8 +4,8 @@ const canvasHeight = 700;
 function setup() {
   const canvas = createCanvas(canvasWidth, canvasHeight);
   canvas.position((windowWidth - canvasWidth) / 2, (windowHeight - canvasHeight) / 2);
-  drawer=new ChessDrawer();
-  controller=new ChessController(drawer.pieces);
+  controller = new SudokuController();
+  drawer = new SudokuDrawer(controller.drawerMap);
 }
 
 function draw() {
