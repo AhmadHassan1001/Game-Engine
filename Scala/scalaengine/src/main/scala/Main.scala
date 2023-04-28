@@ -1,5 +1,6 @@
 import scala.swing._
 import scala.swing.event._
+import scala.collection.mutable._
 import java.awt.{Color, Graphics2D, BasicStroke}
 import java.awt.geom._
 import java.awt.image.BufferedImage
@@ -26,6 +27,16 @@ object GameEngine {
       Array(0, 6, 0, 0, 0, 0, 2, 8, 0),
       Array(0, 0, 0, 4, 1, 9, 0, 0, 5),
       Array(0, 0, 0, 0, 8, 0, 0, 7, 9)
+    )
+
+    var connect4Array:Map[Char,ListBuffer[Int]] = Map('a'->ListBuffer(),'b'->ListBuffer(),'c'->ListBuffer(),'d'->ListBuffer()
+                                                    ,'e'->ListBuffer(),'f'->ListBuffer(),'g'->ListBuffer())
+
+    //XO Array
+    var XOArray:Array[Array[Int]] = Array(
+      Array(-1,-1,-1),
+      Array(-1,-1,-1),
+      Array(-1,-1,-1)
     )
 
     //Chess Array
@@ -95,7 +106,7 @@ object GameEngine {
     }
 
     def readImage(img:String):BufferedImage = {
-      val file = new File("src/main/resources/"+"/"+img+".png")
+      val file = new File("src/main/resources/"+img+".png")
       val image = ImageIO.read(file)
       image
     }
@@ -117,17 +128,47 @@ object GameEngine {
 
     val Connect4_Drawer = (g: Graphics2D) => {
       var rows = 6
-      var cols = 8
+      var cols = 7
       AbstractDrawer(Color.BLUE, rows, cols, Color.WHITE, Color.WHITE, "circle",g)
 
-      /*to be continued*/
+      connect4Array.foreach( mp => {
+        var pos = mp._1 - 'a'
+        var list = mp._2
+        var circleSize = 76
+        var x = (pos * 75) + 75
+    
+        for(i <- 0 until list.size){
+          var y = 450 - (75 * i)
+          list(i) match {
+            case 0 => g.drawImage(readImage("Connect4/Red"),x,y,circleSize,circleSize,null)
+            case 1 => g.drawImage(readImage("Connect4/Yellow"),x,y,circleSize,circleSize,null)
+          }
+        } 
+      })
     }
 
     val XO_Drawer = (g: Graphics2D) => {
       var rows = 3
       var cols = 3
       AbstractDrawer(Color.BLACK, rows, cols, Color.YELLOW, Color.YELLOW, "line",g)
-      /*to be continued*/
+
+      g.setColor(Color.RED)
+      g.setFont(new Font("Arial",1,100))
+      
+      for {
+        row <- 0 until rows
+        col <- 0 until cols
+        } {
+        val x = (col * 150) + 110
+        val y = (row * 160) + 170
+
+        XOArray(row)(col) match {
+          case 0 => g.drawString("X",x,y)
+          case 1 => g.drawString("O",x,y)
+          case _ => ""
+        }
+      }
+      
     }
 
     val Checkers_Drawer = (g: Graphics2D) => {
@@ -181,8 +222,7 @@ object GameEngine {
 
     /* checks for 1 input at a time eg "a1" only*/
     def InBoardo(input: String,rows:Int,cols:Int):Boolean = {
-      if(input.size != 4)false
-
+      
       var checker:Tuple2[Int,Int] = (input(0)-'a'+1,input(1).asDigit)
       if(checker._1 <= 0 || checker._1 > cols )false
       if(checker._2 <= 0 || checker._2 > rows )false
@@ -194,6 +234,7 @@ object GameEngine {
 
       //Check if Start and end Position are in Board*/
       var ret = true
+      
       if(!InBoard(input,rows,cols))ret = false
 
       /*tuples containing position of peice in the Chess array (row,column)*/
@@ -404,9 +445,29 @@ object GameEngine {
 
     }: Boolean
 
-    val Connect4_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
+    val Connect4_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {
+      
+      var loc = input(0)
+      var ret = false
+      if(loc >= 'a' && loc <= 'g')ret = true
+      
+      if(connect4Array(loc).size < 6 && ret)connect4Array(loc).addOne(Turn)
+      else ret = false
 
-    val XO_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
+      ret
+    }: Boolean
+
+    val XO_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {
+      var ret = true
+
+      if(!InBoardo(input,rows,cols))ret = false
+
+      var pos:Tuple2[Int,Int] = (Math.abs(input(1).asDigit-rows),input(0)-'a')
+      if(XOArray(pos._1)(pos._2) == -1)XOArray(pos._1)(pos._2) = Turn
+      else ret = false
+
+      ret
+    }: Boolean
 
     val Checkers_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
@@ -474,7 +535,7 @@ object GameEngine {
               input match {
                 case "Chess"    => abstractEngine(input,8,8,Chess_Drawer,Chess_Controller)
                 case "8Queens"  => abstractEngine(input,8,8,Queens_Drawer,Queens_Controller)
-                case "Connect4" => abstractEngine(input,6,8,Connect4_Drawer,Connect4_Controller)
+                case "Connect4" => abstractEngine(input,6,7,Connect4_Drawer,Connect4_Controller)
                 case "XO"       => abstractEngine(input,3,3,XO_Drawer,XO_Controller)
                 case "Suduko"   => abstractEngine(input,9,9,Suduko_Drawer,Suduko_Controller)
                 case "Checkers" => abstractEngine(input,8,8,Checkers_Drawer,Checkers_Controller)
@@ -555,7 +616,7 @@ object GameEngine {
 
               var txt = gameName match{
                 case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
-                case "XO" | "Connect4" => "Player's 1 Turn"
+                case "XO" | "Connect4" => "Red Player's Turn"
                 case "Suduko" =>""
               }
 
@@ -602,10 +663,6 @@ object GameEngine {
 
                   if(Controller(input,rows,cols,turn)){
                     turnlabel.foreground = new Color(0x013220)
-                    /*For Debug*/
-                    // println("OK")
-                    // println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
-                    // println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
 
                     turn+=1
                     turn = turn%2  
@@ -614,14 +671,14 @@ object GameEngine {
                     {
                       turnlabel.text = gameName match{
                         case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
-                        case "XO" | "Connect4" => "Player's 1 Turn"
+                        case "XO" | "Connect4" => "Red Player's Turn"
                       }
                     } 
                     else 
                     {
                       turnlabel.text = gameName match{
                         case "Chess"|"8Queens"|"Checkers" => "White's  Turn"
-                        case "XO" | "Connect4" => "Player's 2 Turn"
+                        case "XO" | "Connect4" => "Yellow Player's Turn"
                       }
                     }
                     //Reset Input Fields After each Move
@@ -652,3 +709,9 @@ object GameEngine {
     }
   }
 }
+
+
+/*For Debug*/
+// println("OK")
+// println(Math.abs(s2(1).asDigit-rows),s2(0)-'a')
+// println(Math.abs(s1(1).asDigit-rows),s1(0)-'a')
