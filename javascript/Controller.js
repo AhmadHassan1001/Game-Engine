@@ -12,9 +12,14 @@ class Controller {
         for (let i = 0; i < this.rows; i++)
             for (let j = 0; j < this.columns; j++)
                 this.drawerMap[i].push(null);
+
+        this.player = 2;
     }
 
     run(action){
+
+        this.player = (this.player % 2) + 1;
+
         for(let key in this.actions){
             if(parselyEqual(action,key)){
                 let params=parse(action,key);

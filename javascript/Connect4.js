@@ -53,6 +53,8 @@ class ConnectFourController extends Controller {
 
     run(action) {
 
+        this.player = (this.player % 2) + 1;
+
         if (action.length != 1 || !isAlpha(action) || orderAlpha(action) > this.columns - 1 || orderAlpha(action) < 0)
             return false;
         
@@ -61,8 +63,10 @@ class ConnectFourController extends Controller {
         let i = 0;
         while (i < this.rows && this.drawerMap[i][columnIndex].colour == 'rgba(255, 255, 255, 255)')
             i++;
-        
-        // TODO: check whose turn it is
-        this.drawerMap[i - 1][columnIndex].colour = 'rgba(0, 0, 0, 255)';
+
+        if (this.player == 1)
+            this.drawerMap[i - 1][columnIndex].colour = 'rgba(170, 45, 45, 255)';
+        else
+            this.drawerMap[i - 1][columnIndex].colour = 'rgba(245, 220, 35, 255)';
     }
 }
