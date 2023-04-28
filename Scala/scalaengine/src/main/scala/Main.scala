@@ -17,7 +17,7 @@ object GameEngine {
 
     var input = "Connect4" //dummy
 
-    val sudukoBoard: Array[Array[Int]] = Array(
+    val sudukoBoardInt: Array[Array[Int]] = Array(
       Array(5, 3, 0, 0, 7, 0, 0, 0, 0),
       Array(6, 0, 0, 1, 9, 5, 0, 0, 0),
       Array(0, 9, 8, 0, 0, 0, 0, 6, 0),
@@ -28,6 +28,19 @@ object GameEngine {
       Array(0, 0, 0, 4, 1, 9, 0, 0, 5),
       Array(0, 0, 0, 0, 8, 0, 0, 7, 9)
     )
+
+    var sudukoBoard: Array[Array[Int]] = Array(
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0, 0, 0, 0, 0)
+    )
+
 
     var connect4Array:Map[Char,ListBuffer[Int]] = Map('a'->ListBuffer(),'b'->ListBuffer(),'c'->ListBuffer(),'d'->ListBuffer()
                                                     ,'e'->ListBuffer(),'f'->ListBuffer(),'g'->ListBuffer())
@@ -198,7 +211,16 @@ object GameEngine {
         } {
         val x = (col * 50) + 75 +16
         val y = (row * 50) + 75 +34
-        if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
+        
+        if(sudukoBoardInt(row)(col) != 0) {
+          g.setColor(new Color(0x000000))
+          g.drawString(sudukoBoardInt(row)(col).toString,x,y)
+        }
+
+        if(sudukoBoard(row)(col) != 0) {
+          g.setColor(new Color(0x0000AA))
+          g.drawString(sudukoBoard(row)(col).toString,x,y)
+        }
       }
     }
 
@@ -473,7 +495,21 @@ object GameEngine {
 
     val Queens_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
 
-    val Suduko_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {true}: Boolean
+    val Suduko_Controller = (input: String,rows:Int,cols:Int,Turn:Int) => {
+        var value = input(2).asDigit
+        var checker:Tuple2[Int,Int] = (input(0)-'a'+1,input(1).asDigit)
+        if(checker._1 <= 0 || checker._1 > cols )false
+        if(checker._2 <= 0 || checker._2 > rows )false
+        println(checker) 
+        var x = checker._1-1
+        var y = 9 - checker._2
+        if  (sudukoBoardInt(y)(x) != 0) false
+        
+        else {
+                  
+                  sudukoBoard(y)(x) = value
+                  true
+        }}: Boolean
 
     //start menu
     new MainFrame {
@@ -672,6 +708,7 @@ object GameEngine {
                       turnlabel.text = gameName match{
                         case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
                         case "XO" | "Connect4" => "Red Player's Turn"
+                        case "Suduko" => ""
                       }
                     } 
                     else 
@@ -679,6 +716,7 @@ object GameEngine {
                       turnlabel.text = gameName match{
                         case "Chess"|"8Queens"|"Checkers" => "White's  Turn"
                         case "XO" | "Connect4" => "Yellow Player's Turn"
+                        case "Suduko" => ""
                       }
                     }
                     //Reset Input Fields After each Move
