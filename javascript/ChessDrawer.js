@@ -11,8 +11,5 @@ class ChessDrawer extends Drawer {
             loadImage('/javascript/assets/chess_pieces.png'),   // sprite sheet
             800 / 6, 267 / 2                                    // piece width and height
         );
-
-        
-
     }
 }
