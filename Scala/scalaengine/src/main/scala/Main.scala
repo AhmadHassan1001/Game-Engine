@@ -10,6 +10,7 @@ import java.io.File
 import javax.swing.border.Border
 import javax.swing.SwingConstants
 import java.awt
+import scala.util.Random
 
 object GameEngine {
 
@@ -17,30 +18,81 @@ object GameEngine {
 
     var input = "Connect4" //dummy
 
-    val sudukoBoardInt: Array[Array[Int]] = Array(
-      Array(5, 3, 0, 0, 7, 0, 0, 0, 0),
-      Array(6, 0, 0, 1, 9, 5, 0, 0, 0),
-      Array(0, 9, 8, 0, 0, 0, 0, 6, 0),
-      Array(8, 0, 0, 0, 6, 0, 0, 0, 3),
-      Array(4, 0, 0, 8, 0, 3, 0, 0, 1),
-      Array(7, 0, 0, 0, 2, 0, 0, 0, 6),
-      Array(0, 6, 0, 0, 0, 0, 2, 8, 0),
-      Array(0, 0, 0, 4, 1, 9, 0, 0, 5),
-      Array(0, 0, 0, 0, 8, 0, 0, 7, 9)
-    )
+    object SudokuGenerator {
+      def generateBoard (emptySpaces: Int = Random.between(60,70)): Array[Array[Int]] = {
+        val board = Array.ofDim[Int](9, 9)
+        for (i <- 0 until 9; j <- 0 until 9) {
+          board(i)(j) = 0
+        }
+        for (i <- 0 until 9) {
+          val num = Random.nextInt(9) + 1
+          if (isValid(board, i, 0, num)) {
+            board(i)(0) = num
+          } else {
+            board(i)(0) = 0
+          }
+        }
+        fillBoard(board, 0, 1)
+        randomlyRemoveNumbers(board, emptySpaces)
+        board
+      }
 
-    var sudukoBoard: Array[Array[Int]] = Array(
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Array(0, 0, 0, 0, 0, 0, 0, 0, 0)
-    )
+      private def fillBoard(board: Array[Array[Int]], row: Int, col: Int): Boolean = {
+        if (col == 9) {
+          return fillBoard(board, row + 1, 0)
+        }
+        if (row == 9) {
+          return true
+        }
+        val nums = Random.shuffle(1 to 9)
+        for (num <- nums) {
+          if (isValid(board, row, col, num)) {
+            board(row)(col) = num
+            if (fillBoard(board, row, col + 1)) {
+              return true
+            }
+            board(row)(col) = 0
+          }
+        }
+        false
+      }
 
+      private def isValid(board: Array[Array[Int]], row: Int, col: Int, num: Int): Boolean = {
+        for (i <- 0 until 9) {
+          if (board(row)(i) == num) {
+            return false
+          }
+          if (board(i)(col) == num) {
+            return false
+          }
+          val boxRow = 3 * (row / 3) + i / 3
+          val boxCol = 3 * (col / 3) + i % 3
+          if (board(boxRow)(boxCol) == num) {
+            return false
+          }
+        }
+        true
+      }
+
+      private def randomlyRemoveNumbers(board: Array[Array[Int]], emptySpaces: Int): Unit = {
+        var count = 0
+        while (count < emptySpaces) {
+          val row = Random.nextInt(9)
+          val col = Random.nextInt(9)
+          if (board(row)(col) != 0) {
+            board(row)(col) = 0
+            count += 1
+          }
+        }
+      }
+    }
+
+    val sudukoBoardInt = SudokuGenerator.generateBoard(/*add number here for emptyspaces or leave empty for random*/)
+
+    val sudukoBoard = Array.ofDim[Int](9, 9)
+    for (i <- 0 until 9; j <- 0 until 9) {
+      sudukoBoard(i)(j) = 0
+    }
 
     var connect4Array:Map[Char,ListBuffer[Int]] = Map('a'->ListBuffer(),'b'->ListBuffer(),'c'->ListBuffer(),'d'->ListBuffer()
                                                     ,'e'->ListBuffer(),'f'->ListBuffer(),'g'->ListBuffer())
