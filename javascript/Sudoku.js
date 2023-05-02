@@ -1,92 +1,87 @@
-class SudokuDrawer extends Drawer {
+class Sudoku extends Game {
 
-    constructor(pieces) {
-        super(
-            pieces,
-            9, 9,
-            color(255, 255, 255, 255), color(255, 255, 255, 255),
-            1
-        );
-
-        this.originalBoard = JSON.parse(JSON.stringify(this.pieces)); // deep copy of this.drawerMap
+    constructor(map, rows, columns) {
+        super(map, rows, columns);
     }
 
-    DrawBoard() {
-        super.DrawBoard();
+    Drawer(map) {
+
+        super.Drawer();
+        
+        const canvasHeight = 700;
+        const canvasWidth = 700;
+        const offset = 60;
+        const rows = 9;
+        const columns = 9;
+        const primaryColour = color(255, 255, 255, 255);
+        const secondaryColour = color(255, 255, 255, 255);
+        const tileWidth = (canvasWidth - offset) / columns;
+        const tileHeight = (canvasHeight - offset) / rows;
+        
+        this.SquareBoardDrawer(rows, columns, primaryColour, secondaryColour, tileWidth, tileHeight, offset);
         
         stroke(0, 0, 0, 255);
         strokeWeight(10);
-        line(0, (canvasHeight - this.offset) / 3 - 5 + this.offset / 2, canvasWidth, (canvasHeight - this.offset) / 3 - 5 + this.offset / 2);
-        line(0, (canvasHeight - this.offset) / 3 * 2 - 5 + this.offset / 2, canvasWidth, (canvasHeight - this.offset) / 3 * 2 - 5 + this.offset / 2);
-        line((canvasWidth - this.offset) / 3 - 5 + this.offset / 2, 0, (canvasWidth - this.offset) / 3 - 5 + this.offset / 2, canvasHeight);
-        line((canvasHeight - this.offset) / 3 * 2 - 5 + this.offset / 2, 0, (canvasHeight - this.offset) / 3 * 2 - 5 + this.offset / 2, canvasHeight);
+        line(0, (canvasHeight - offset) / 3 - 5 + offset / 2, canvasWidth, (canvasHeight - offset) / 3 - 5 + offset / 2);
+        line(0, (canvasHeight - offset) / 3 * 2 - 5 + offset / 2, canvasWidth, (canvasHeight - offset) / 3 * 2 - 5 + offset / 2);
+        line((canvasWidth - offset) / 3 - 5 + offset / 2, 0, (canvasWidth - offset) / 3 - 5 + offset / 2, canvasHeight);
+        line((canvasHeight - offset) / 3 * 2 - 5 + offset / 2, 0, (canvasHeight - offset) / 3 * 2 - 5 + offset / 2, canvasHeight);
+        
+        this.DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight);
+        this.PieceDrawer(map, tileWidth, tileHeight, offset);
     }
 
-    DrawPieces() {
-        const tileWidth = (canvasWidth - this.offset) / this.columns;
-        const tileHeight = (canvasHeight - this.offset) / this.rows;
+    PieceDrawer(map, tileWidth, tileHeight, offset) {
 
-        this.pieces.forEach((row, i) => {
-            row.forEach((element, j) => {
-                if (element != null) {
+        strokeWeight(5);
+
+        for (let i = 0; i < map.length; i++) {
+            for (let j = 0; j < map[i].length; j++) {
+                if (map[i][j] != null) {
                     textSize(30);
                     textStyle('bold');
-                    if (this.originalBoard[i][j] != null)
-                        fill(0, 0, 255, 255);
-                    else
-                        fill(255, 255, 255, 255);
-                    text(element, j * tileWidth + this.offset / 2 + 25, i * tileHeight + 50 + this.offset / 2);
+                    fill(255, 255, 255, 255);
+                    text(map[i][j], j * tileWidth + offset / 2 + 25, i * tileHeight + 50 + offset / 2);
                 }
-            });
-        });
-    }
-}
-
-class SudokuController extends Controller {
-
-    constructor() {
-        super(null, 9, 9);
-
-        this.drawerMap[0][0] = 2;
-        this.drawerMap[0][1] = 9;
-        this.drawerMap[0][2] = 1;
-        this.drawerMap[0][3] = 3;
-        this.drawerMap[0][4] = 4;
-
-        this.originalBoard = JSON.parse(JSON.stringify(this.drawerMap)); // deep copy of this.drawerMap
+            }
+        }
     }
 
-    run(action) {
-        action = action.replaceAll(' ', '');
-        action = action.toLowerCase();
-        let actionList = action.split('-');
+    Controller(map, input, player) {
+
+        const rows = map.length;
+        const columns = map[0].length;
+
         
-        let tileLetter = actionList[0][0];
-        let tileNumber = actionList[0][1];
-        let playedNumber = actionList[1];
+        input = input.replaceAll(' ', '');
+        input = input.toLowerCase();
+
+        if (input.length != 4)
+            return [false, map];
+
+        let inputList = input.split('-');
+        let tileLetter = inputList[0][0];
+        let tileNumber = inputList[0][1];
+        let playedNumber = inputList[1];
+
+        console.log(tileNumber);
+
 
         // validating input
         if (
-            !isAlpha(tileLetter) || orderAlpha(tileLetter) > this.drawerMap[0].length - 1 ||
-            !isDigit(tileNumber) || orderDigit(tileNumber) > this.drawerMap.length - 1 || orderDigit(tileNumber) < 1 ||
+            !isAlpha(tileLetter) || orderAlpha(tileLetter) > columns - 1 ||
+            !isDigit(tileNumber) || orderDigit(tileNumber) > rows || orderDigit(tileNumber) < 1 ||
             playedNumber.length != 1 || !isDigit(playedNumber) || orderDigit(playedNumber) > 9 || orderDigit(playedNumber) < 1
         )
-            return false;
+            return [false, map];
         
-        let rowIndex = orderDigit(tileNumber) - 1;
+        let rowIndex =  9 - orderDigit(tileNumber);
         let columnIndex = orderAlpha(tileLetter);
         
-        if (this.originalBoard[rowIndex][columnIndex] != null)
-            return false;
+        // if (this.originalBoard[rowIndex][columnIndex] != null)
+            // return [false, map];
 
-        this.drawerMap[rowIndex][columnIndex] = playedNumber;
-        return true;
+        map[rowIndex][columnIndex] = playedNumber;
+        return [true, map];
     }
-}
-
-const isAlpha=(c)=>{
-    return c.charCodeAt(0) >= "a".charCodeAt(0) &&c.charCodeAt(0) <= "z".charCodeAt(0);
-}
-const isDigit=(c)=>{
-    return c.charCodeAt(0) >= "0".charCodeAt(0) &&c.charCodeAt(0) <= "9".charCodeAt(0);
 }
