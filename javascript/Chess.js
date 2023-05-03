@@ -91,6 +91,7 @@ class Chess extends AbstractGameEngine {
 
         let valid = true;
         
+
         // validate first parameter
         valid &&= (pos1.length == 2 && isAlpha(pos1[0]) && isDigit(pos1[1]) && orderAlpha(pos1[0]) <= orderAlpha('h') && orderDigit(pos1[1]) <= orderDigit('8') && orderDigit(pos1[1]) >= orderDigit('1'));
 
@@ -99,11 +100,14 @@ class Chess extends AbstractGameEngine {
 
 
         // Validate action
+
         // validate there is object to move
         let origin = map[8 - 1 - (orderDigit(pos1[1]) - 1)][orderAlpha(pos1[0])];
         let target = map[8 - 1 - (orderDigit(pos2[1]) - 1)][orderAlpha(pos2[0])];
-
+        
         valid &&= origin != null;
+        
+        valid &&= (origin.colour=="black"&&player==1)||(origin.colour=="white"&&player==2)
 
         // for each piece validate action
         if (origin)
