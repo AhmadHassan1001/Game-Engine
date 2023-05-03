@@ -1,22 +1,34 @@
-const canvasWidth = 700;
-const canvasHeight = 700;
-
 function setup() {
+  const canvasWidth = 700;
+  const canvasHeight = 700;
+
   const canvas = createCanvas(canvasWidth, canvasHeight);
-  canvas.position((windowWidth - canvasWidth) / 2, (windowHeight - canvasHeight) / 2);
-  drawer=new QueensDrawer();
-  controller=new QueensController(drawer.pieces);
+  canvas.position((windowWidth - canvasWidth) / 2, (windowHeight - canvasHeight) / 2 + 50);
+  gameMap = [];
+  player = 1;
+  game = GameFactory.GetGame('Queens', gameMap);
 }
 
 function draw() {
-  drawer.DrawBoard();
-  drawer.DrawPieces();
+  
+  game.Drawer(gameMap);
 
-  // let input = document.getElementById('input');
+  let input = prompt("Enter your input at the form of ##-## (eg. a1-b3)");
 
-}
+  if (input) {
+      let valid;
+      [valid, gameMap] = game.Controller(gameMap, input, player);
+      console.log(gameMap);
+      input = null;
+      
+      if (!valid)
+          return;
+      
+      game.Drawer(gameMap);
 
-function update(){
-  controller.run(document.getElementById("inputField").value);
-  document.getElementById("inputField").value="";
+      if (player == 1)
+          player = 2;
+      else
+          player = 1;
+  }
 }
