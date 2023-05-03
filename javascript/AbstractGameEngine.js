@@ -1,4 +1,4 @@
-class Game {
+class AbstractGameEngine {
 
     constructor(map, rows, columns) {
         
@@ -8,6 +8,33 @@ class Game {
         for (let i = 0; i < rows; i++)
             for (let j = 0; j < columns; j++)
                 map[i].push(null);
+
+        setTimeout(() => {
+            let player = 1;
+            this.Drawer(map);
+
+            // main loop
+            setInterval(() => {
+                let input = prompt("Enter your input at the form of ##-## (eg. a1-b3)");
+
+                if (input) {
+                    let valid;
+                    [valid, map] = this.Controller(map, input, player);
+                    console.log(valid, map);
+                    input = null;
+                    
+                    if (!valid)
+                        return;
+                    
+                    this.Drawer(map);
+
+                    if (player == 1)
+                        player = 2;
+                    else
+                        player = 1;
+                }
+            }, 1000);
+        }, 100);
     }
 
     Controller(map, input, player) {}

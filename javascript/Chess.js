@@ -1,4 +1,4 @@
-class Chess extends Game {
+class Chess extends AbstractGameEngine {
     
     constructor(map, rows, columns) {
 

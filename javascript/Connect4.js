@@ -1,4 +1,4 @@
-class ConnectFour extends Game {
+class ConnectFour extends AbstractGameEngine {
     
     constructor(map, rows, columns) {
         super(map, rows, columns);
@@ -6,9 +6,13 @@ class ConnectFour extends Game {
         for (let i = 0; i < rows; i++)
             for (let j = 0; j < columns; j++)
                 map[i][j] = new ConnectFourPiece('rgba(255, 255, 255, 255)');
+
+        
     }
 
     Drawer(map) {
+
+        super.Drawer();
 
         const canvasHeight = 700;
         const canvasWidth = 700;
@@ -17,6 +21,7 @@ class ConnectFour extends Game {
         const columns = 7;
         const tileWidth = (canvasWidth - offset) / columns;
         const tileHeight = (canvasHeight - offset) / rows;
+
 
         background(255);
 
@@ -35,7 +40,6 @@ class ConnectFour extends Game {
             for (let j = 0; j < columns; j++) {
                 strokeWeight(3);
                 fill(map[i][j].colour);
-                console.log(map[i][j].colour);
                 circle(j * tileWidth + tileWidth / 2 + offset / 2, i * tileHeight + tileHeight / 2 + offset / 2, tileWidth - 5);
             }
         }

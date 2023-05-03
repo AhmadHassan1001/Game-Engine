@@ -1,4 +1,4 @@
-class Sudoku extends Game {
+class Sudoku extends AbstractGameEngine {
 
     constructor(map, rows, columns) {
         super(map, rows, columns);
