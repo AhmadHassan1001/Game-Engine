@@ -151,10 +151,10 @@ object GameEngine {
             contents += Swing.HStrut(20)
             
             gameName match {
-              case "Chess"|"Suduko" => {
+              case "Chess"|"Suduko"|"Checkers" => {
                 contents += inputField2
               }
-              case "8Queens"|"Checkers"|"XO"|"Connect4" =>{
+              case "8Queens"|"XO"|"Connect4" =>{
                 contents += Swing.HStrut(100)
               }
             }
@@ -171,8 +171,6 @@ object GameEngine {
                 var s2 = inputField2.text
                 var input = s1+s2
                 println(input) 
-                // sudukoBoard(Math.abs(s1(1).asDigit-rows))(s1(0)-'a')=s2.toInt
-                // canvas.repaint()
 
                 if(Controller(state,input,turn)){
                   turnlabel.foreground = new Color(0x013220)
@@ -729,7 +727,67 @@ object GameEngine {
     }: Boolean
 
     //Checkers Controller
-    val Checkers_Controller = (checkersBoard:Seq[Array[Int]],input: String,turn:Int) => {true}: Boolean
+    val Checkers_Controller = (checkersBoard:Seq[Array[Int]],input: String,turn:Int) => {
+      var rows = 8
+      var cols = 8
+      var ret = true
+
+      if(!InBoard(input,rows,cols)) ret = false
+
+      var start:Tuple2[Int,Int] = (Math.abs(input(1).asDigit-rows),input(0)-'a')
+      var end  :Tuple2[Int,Int] = (Math.abs(input(3).asDigit-rows),input(2)-'a')
+
+      //checks if the first peice is valid
+      if(checkersBoard(start._1)(start._2) == -1) ret = false
+
+      /*if peice at start position is black and it's white turn then return false*/
+      if(checkersBoard(start._1)(start._2) == 0 && turn == 0) ret = false
+
+      /*if peice at start position is white and it's Black white turn then return false*/
+      if(checkersBoard(start._1)(start._2) == 1 && turn == 1) ret = false
+
+      var deltaX = end._2 - start._2 
+      var deltaY = end._1 - start._1
+       println(deltaX)
+       println(deltaY)
+      //checks for diagonal move
+      if (Math.abs(deltaY) != Math.abs(deltaX)) ret = false
+      var step = Math.abs(deltaY)
+      println(step)
+
+      //0 white 1 black
+      //checks for direction
+      if ( checkersBoard(start._1)(start._2) == 0 )
+        if (deltaY > 0) ret = false
+
+      if ( checkersBoard(start._1)(start._2) == 1 )
+        if (deltaY < 0) ret = false
+
+      if (step != 1){        
+        if (step == 2 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) != -1){
+          if ( turn == 0 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 0){
+            checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) = -1
+            ret = true
+          } 
+          if ( turn == 1 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 1){
+            checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) = -1
+            ret = true
+          }
+        }
+      else ret = false
+    }
+      
+      /*checks if end place is empty*/
+      if(checkersBoard(end._1)(end._2) != -1) ret = false
+
+      if(ret) {
+        checkersBoard(Math.abs(end._1))(end._2) = checkersBoard(start._1)(start._2)
+          checkersBoard(start._1)(start._2) = -1
+        true
+      }
+        else false
+    
+    }: Boolean
 
     //Queens Controller
     val Queens_Controller = (input: String,Turn:Int) => {true}: Boolean
