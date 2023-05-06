@@ -11,8 +11,10 @@ import javax.swing.border.Border
 import javax.swing.SwingConstants
 import java.awt
 import javax.swing.JFrame
+import scala.util.Random
 
 object GameEngine {
+
 
   def AbstractDrawer (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) = {
 
@@ -183,6 +185,7 @@ object GameEngine {
                     turnlabel.text = gameName match{
                       case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
                       case "XO" | "Connect4" => "Red Player's Turn"
+                      case "Suduko" => ""
                     }
                   } 
                   else 
@@ -190,6 +193,7 @@ object GameEngine {
                     turnlabel.text = gameName match{
                       case "Chess"|"8Queens"|"Checkers" => "White's  Turn"
                       case "XO" | "Connect4" => "Yellow Player's Turn"
+                      case "Suduko" => ""
                     }
                   }
                   //Reset Input Fields After each Move
@@ -220,8 +224,6 @@ object GameEngine {
       visible = true
     }
   }
-
-
 
   //main
   def main(args: Array[String]): Unit = {
@@ -336,7 +338,7 @@ object GameEngine {
     }
 
     //Checkers Drawer
-    val Checkers_Drawer = (g: Graphics2D) => {
+    val Checkers_Drawer = (Board:Seq[Array[Int]]) => {
 
       var rows = 8
       var cols = 8
@@ -345,10 +347,17 @@ object GameEngine {
 
         class Canvas extends Component{
           override def paint(g: Graphics2D): Unit = {
-            AbstractDrawer(Color.DARK_GRAY, rows, cols, new Color(0xC2B280), Color.WHITE,"square",g)
-            
+            AbstractDrawer(Color.DARK_GRAY, rows, cols, Color.WHITE, new Color(0xC2B280),"square",g)
 
-            /*to be continued*/
+            for {
+              row <- 0 until rows
+              col <- 0 until cols
+              } {
+              val x = (col * 57) + 75
+              val y = (row * 57) + 75
+              if(Board(row)(col) == 1) g.drawImage(readImage("Checkers/1"),x,y,50,50,null)
+              if(Board(row)(col) == 0) g.drawImage(readImage("Checkers/0"),x,y,50,50,null)
+            }
           }  
         } 
 
@@ -358,7 +367,6 @@ object GameEngine {
         resizable = false
         visible = true    
       } 
-
       frame
     }
 
@@ -404,10 +412,19 @@ object GameEngine {
             } {
               val x = (col * 50) + 75 +16
               val y = (row * 50) + 75 +34
-              if(sudukoBoard(row)(col) != 0) g.drawString(sudukoBoard(row)(col).toString,x,y)
-            }
+              if(sudukoBoard(row)(col) != 0){
+                if(sudukoBoard(row)(col) > 9){
+                  g.setColor(Color.BLUE)
+                  g.drawString((sudukoBoard(row)(col)/10).toString,x,y)
+                }
+                else {
+                  g.setColor(Color.BLACK)
+                  g.drawString(sudukoBoard(row)(col).toString,x,y)
+                }
+              }
           }  
         } 
+      }
 
         contents = new Canvas
         bounds = new Rectangle(700, 700)
@@ -697,16 +714,25 @@ object GameEngine {
     val Suduko_Controller = (sudukoBoard:Seq[Array[Int]],input: String,Turn:Int) => {
       var rows = 9
       var cols = 9
-
-      true
+      val col = Character.getNumericValue(input.charAt(0)) - 10
+      println(col)
+      val row = 9 - (Character.digit(input.charAt(1), 10))
+      println(row)
+      var value = Character.digit(input.charAt(2), 10)
+      println(value)
+      if(!InBoardo(input.substring(0, input.length - 1),rows,cols))false
+      if(sudukoBoard(row)(col) > 9) false
+      else {sudukoBoard(row)(col) = value
+        true
+      }
+      
     }: Boolean
 
     //Checkers Controller
-    val Checkers_Controller = (input: String,Turn:Int) => {true}: Boolean
+    val Checkers_Controller = (checkersBoard:Seq[Array[Int]],input: String,turn:Int) => {true}: Boolean
 
     //Queens Controller
     val Queens_Controller = (input: String,Turn:Int) => {true}: Boolean
-
 
     //start menu
     new MainFrame {
@@ -718,24 +744,87 @@ object GameEngine {
 
       val gamesCnt = Games.size
 
-      //Suduko
-      val sudukoBoard: Array[Array[Int]] = Array(
-        Array(5, 3, 0, 0, 7, 0, 0, 0, 0),
-        Array(6, 0, 0, 1, 9, 5, 0, 0, 0),
-        Array(0, 9, 8, 0, 0, 0, 0, 6, 0),
-        Array(8, 0, 0, 0, 6, 0, 0, 0, 3),
-        Array(4, 0, 0, 8, 0, 3, 0, 0, 1),
-        Array(7, 0, 0, 0, 2, 0, 0, 0, 6),
-        Array(0, 6, 0, 0, 0, 0, 2, 8, 0),
-        Array(0, 0, 0, 4, 1, 9, 0, 0, 5),
-        Array(0, 0, 0, 0, 8, 0, 0, 7, 9)
-      )
+      object SudokuGenerator {
+        def generateBoard(emptySpaces: Int = Random.between(60, 70)): Array[Array[Int]] = {
+          val board = Array.ofDim[Int](9, 9)
+          for (i <- 0 until 9; j <- 0 until 9) {
+            board(i)(j) = 0
+          }
+          fillBoard(board, 0, 0)
+          randomlyRemoveNumbers(board, emptySpaces)
+
+          for (i <- 0 until 9) {
+            for (j <- 0 until 9) {
+              board(i)(j) *= 10
+            }
+          }
+
+          board
+        }
+
+        private def fillBoard(board: Array[Array[Int]], row: Int, col: Int): Boolean = {
+          if (col == 9) {
+            return fillBoard(board, row + 1, 0)
+          }
+          if (row == 9) {
+            return true
+          }
+          val nums = randomPermutation()
+          for (num <- nums) {
+            if (isValid(board, row, col, num)) {
+              board(row)(col) = num
+              if (fillBoard(board, row, col + 1)) {
+                return true
+              }
+              board(row)(col) = 0
+            }
+          }
+          false
+        }
+
+        private def isValid(board: Array[Array[Int]], row: Int, col: Int, num: Int): Boolean = {
+          val boxRowStart = 3 * (row / 3)
+          val boxColStart = 3 * (col / 3)
+          for (i <- 0 until 9) {
+            if (board(row)(i) == num || board(i)(col) == num || board(boxRowStart + i / 3)(boxColStart + i % 3) == num) {
+              return false
+            }
+          }
+          true
+        }
+
+        private def randomlyRemoveNumbers(board: Array[Array[Int]], emptySpaces: Int): Unit = {
+          var count = 0
+          while (count < emptySpaces) {
+            val row = Random.nextInt(9)
+            val col = Random.nextInt(9)
+            if (board(row)(col) != 0) {
+              board(row)(col) = 0
+              count += 1
+            }
+          }
+        }
+
+        private def randomPermutation(): Array[Int] = {
+          val nums = Array.range(1, 10)
+          for (i <- nums.length - 1 to 1 by -1) {
+            val j = Random.nextInt(i + 1)
+            val tmp = nums(i)
+            nums(i) = nums(j)
+            nums(j) = tmp
+          }
+          nums
+        }
+      }
+
+      val sudukoBoard = SudokuGenerator.generateBoard(/*add number here for emptyspaces or leave empty for random*/)
 
       //Chess Array
       var chessImageArrayW = Array((1,"RookWhite"),(2,"KnightWhite"),(3,"BishopWhite"),(4,"QueenWhite"),
                                   (5,"KingWhite"),(3,"BishopWhite"),(2,"KnightWhite"),(1,"RookWhite"))
       var chessImageArrayB = Array((7,"RookBlack"),(8,"KnightBlack"),(9,"BishopBlack"),(10,"QueenBlack"),
                                   (11,"KingBlack"),(9,"BishopBlack"),(8,"KnightBlack"),(7,"RookBlack"))
+
 
       var chessBoard = Array.ofDim[Tuple2[Int,String]](8,8)
       chessBoard(0) = chessImageArrayW
@@ -754,6 +843,18 @@ object GameEngine {
         Array(-1,-1,-1),
         Array(-1,-1,-1)
       )
+
+      var checkersBoard:Array[Array[Int]] = Array(
+        Array(-1,1,-1,1,-1,1,-1,1),
+        Array(1,-1,1,-1,1,-1,1,-1),
+        Array(-1,1,-1,1,-1,1,-1,1),
+        Array(-1,-1,-1,-1,-1,-1,-1,-1),
+        Array(-1,-1,-1,-1,-1,-1,-1,-1),
+        Array(0,-1,0,-1,0,-1,0,-1),
+        Array(-1,0,-1,0,-1,0,-1,0),
+        Array(0,-1,0,-1,0,-1,0,-1)
+      )                           
+
 
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
@@ -807,11 +908,11 @@ object GameEngine {
               
               input match {
                 case "Chess"    => abstractEngine(input,Chess_Drawer,Chess_Controller,chessBoard)
-                // case "8Queens"  => abstractEngine(input,8,8,Queens_Drawer,Queens_Controller)
+                //case "8Queens"  => abstractEngine(input,8,8,Queens_Drawer,Queens_Controller)
                 case "Connect4" => abstractEngine(input,Connect4_Drawer,Connect4_Controller,connect4Array)
                 case "XO"       => abstractEngine(input,XO_Drawer,XO_Controller,XoArray)
                 case "Suduko"   => abstractEngine(input,Suduko_Drawer,Suduko_Controller,sudukoBoard)
-                // case "Checkers" => abstractEngine(input,8,8,Checkers_Drawer,Checkers_Controller)
+                case "Checkers" => abstractEngine(input,Checkers_Drawer,Checkers_Controller,checkersBoard)
               }
 
               dispose()
