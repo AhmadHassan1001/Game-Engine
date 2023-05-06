@@ -109,13 +109,13 @@ object GameEngine {
             contents += Swing.HStrut(20)
 
             gameName match {
-              case "Chess" => {
+              case "Chess"|"Checkers" => {
                 contents += new Label("end Position"){font = new Font("Arial", 1, 12)}
               }
               case "Suduko" => {
                 contents += new Label("value"){font = new Font("Arial", 1, 12)}
               }
-              case "8Queens"|"Checkers"|"XO" | "Connect4" =>{}
+              case "8Queens"|"XO" | "Connect4" =>{}
             }
 
           }
