@@ -46,7 +46,7 @@ const move_queen = (drawerMap, pos) => {
 
 
 
-class Queens extends Game {
+class Queens extends AbstractGameEngine {
     constructor(map, rows, columns) {
 
         super(map, rows, columns);

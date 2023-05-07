@@ -1,4 +1,4 @@
 function setup() {
 
-    game = GameFactory.GetGame('Chess');
+    game = GameFactory.GetGame('Queens');
 }
