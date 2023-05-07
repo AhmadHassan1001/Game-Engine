@@ -1,3 +1,3 @@
 function setup() {
-    game = GameFactory.GetGame('Connect-4');
+    game = GameFactory.GetGame('Tic-Tac-Toe');
 }
