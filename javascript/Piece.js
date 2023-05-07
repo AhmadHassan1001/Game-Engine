@@ -12,6 +12,20 @@ class ConnectFourPiece extends Piece {
     }
 }
 
+class CheckerPiece extends Piece {
+
+    constructor(colour) {
+        super(colour);
+        if(colour=='white'){
+            this.x=this.y=55;
+        }else{
+
+            this.x=180;
+            this.y=55
+        }
+    }
+}
+
 class ChessPiece extends Piece {
 
     constructor(i, j, colour) {
