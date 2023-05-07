@@ -1,6 +1,6 @@
 class GameFactory {
 
-    static GetGame(game, map) {
+    static GetGame(game) {
 
         let rows, columns;
         switch (game) {
@@ -15,25 +15,25 @@ class GameFactory {
             case 'Chess': {
                 rows = 8;
                 columns = 8;
-                return new Chess(map, rows, columns);
+                return new Chess([], rows, columns);
             }
 
             case 'Connect-4': {
                 rows = 6;
                 columns = 7;
-                return new ConnectFour(map, rows, columns);
+                return new ConnectFour([], rows, columns);
             }
 
             case 'Sudoku': {
                 rows = 9;
                 columns = 9;
-                return new Sudoku(map, rows, columns);
+                return new Sudoku([], rows, columns);
             }
 
             case 'Queens': {
                 rows = 8;
                 columns = 8;
-                return new Queens(map, rows, columns);
+                return new Queens([], rows, columns);
             }
         }
     }

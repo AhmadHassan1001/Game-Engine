@@ -1,58 +1,69 @@
 class Piece {
-    
-    constructor(i, j, pieceWidth, pieceHeight,type) {
-        this.pieceWidth = pieceWidth;
-        this.pieceHeight = pieceHeight;
-        this.x = pieceWidth * j;
-        this.y = pieceHeight * i;
-        this.labels=[]
-        this.type=type
+
+    constructor(colour) {
+        this.colour = colour;
+    }
+}
+
+class ConnectFourPiece extends Piece {
+
+    constructor(colour) {
+        super(colour);
     }
 }
 
 class ChessPiece extends Piece {
-    
-    constructor(i, j,type) {
-        super(i, j, 800 / 6, 267 / 2,type);
+
+    constructor(i, j, colour) {
+        super(colour);
+
+        const pieceWidth = 800 / 6;
+        const pieceHeight = 267 / 2;
+
+        this.x = j * pieceWidth;
+        this.y = i * pieceHeight;
     }
+
+    validateMove(pos1, pos2, target) {}
 }
 
-class Pawn extends ChessPiece{
-    constructor(i,j) {
-        super(i, j,"pawn");
+class Pawn extends ChessPiece {
+    constructor(i, j, colour) {
+        super(i, j, colour);
     }
-    
-    validateMove(pos1,pos2,target){
+
+    validateMove(pos1, pos2, target) {
+        console.log(this.colour);
         let validpawn = false;
         //front cell is empty
-        validpawn ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.labels.includes('white')) ? 1 : -1)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 0 && target == null;
+        validpawn ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'white') ? 1 : -1)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 0 && target == null;
         //corner cells has enemy
-        validpawn ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.labels.includes('white')) ? 1 : -1)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1 && target != null && (target.labels.includes('black') && this.labels.includes('white') || target.labels.includes('white') && this.labels.includes('black'));
+        validpawn ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'white') ? 1 : -1)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1 && target != null && (target.colour == 'black' && this.colour == 'white' || target.colour == 'white' && this.colour == 'black');
         return validpawn;
     }
 }
-class Knight extends ChessPiece{
-    constructor(i,j) {
-        super(i, j,"knight");
+class Knight extends ChessPiece {
+    constructor(i, j, colour) {
+        super(i, j, colour);
     }
-    
-    validateMove(pos1,pos2,target){
+
+    validateMove(pos1, pos2, target) {
         let validknight = true;
         //cell is end of L
         validknight &&= (abs(orderAlpha(pos1[0]) - orderAlpha(pos2[0])) == 2 && abs(orderDigit(pos1[1]) - orderDigit(pos2[1])) == 1) || (abs(orderAlpha(pos1[0]) - orderAlpha(pos2[0])) == 1 && abs(orderDigit(pos1[1]) - orderDigit(pos2[1])) == 2);
 
         //cell is empty or has enemy
-        validknight &&= (target == null) || (target.labels.includes('black') && origin.labels.includes('white')) || (target.labels.includes('white') && origin.labels.includes('black'));
+        validknight &&= (target == null) || (target.colour == 'black' && origin.colour == 'white') || (target.colour == 'white' && origin.colour == 'black');
         return validknight;
     }
 }
 
-class King extends ChessPiece{
-    constructor(i,j) {
-        super(i, j,"king");
+class King extends ChessPiece {
+    constructor(i, j, colour) {
+        super(i, j, colour);
     }
-    
-    validateMove(pos1,pos2,target){
+
+    validateMove(pos1, pos2, target) {
         let validking = true;
         validking = true;
         //cell is near
@@ -60,16 +71,17 @@ class King extends ChessPiece{
         validking &&= (ecludian_distance >= 1) && abs(orderAlpha(pos1[0]) - orderAlpha(pos2[0])) <= 1 && abs(orderDigit(pos1[1]) - orderDigit(pos2[1])) <= 1;
         console.log(validking)
         //cell is empty or has enemy
-        validking &&= (target == null) || (target.labels.includes('black') && origin.labels.includes('white')) || (target.labels.includes('white') && origin.labels.includes('black'));
+        validking &&= (target == null) || (target.colour == 'black' && origin.colour == 'white') || (target.colour == 'white' && origin.colour == 'black');
         return validking;
     }
 }
-class Rook extends ChessPiece{
-    constructor(i,j) {
-        super(i, j,"rook");
+
+class Rook extends ChessPiece {
+    constructor(i, j, colour) {
+        super(i, j, colour);
     }
-    
-    validateMove(pos1,pos2,target){
+
+    validateMove(pos1, pos2, target) {
         let validrook = true;
         validrook = true;
         //way is vertiacl or horizontal
@@ -91,17 +103,17 @@ class Rook extends ChessPiece{
             }
         }
         //cell is empty or has enemy
-        validrook &&= (target == null) || (target.labels.includes('black') && origin.labels.includes('white')) || (target.labels.includes('white') && origin.labels.includes('black'));
+        validrook &&= (target == null) || (target.colour == 'black' && origin.colour == 'white') || (target.colour == 'white' && origin.colour == 'black');
         return validrook;
     }
 }
 
-class Bishop extends ChessPiece{
-    constructor(i,j) {
-        super(i, j,"bishop");
+class Bishop extends ChessPiece {
+    constructor(i, j, colour) {
+        super(i, j, colour);
     }
-    
-    validateMove(pos1,pos2,target){
+
+    validateMove(pos1, pos2, target) {
         let validbishop = true;
         validbishop = true;
         //way is 45 or 135
@@ -122,17 +134,17 @@ class Bishop extends ChessPiece{
 
 
         //cell is empty or has enemy
-        validbishop &&= (target == null) || (target.labels.includes('black') && origin.labels.includes('white')) || (target.labels.includes('white') && origin.labels.includes('black'));
+        validbishop &&= (target == null) || (target.colour == 'black' && origin.colour == 'white') || (target.colour == 'white' && origin.colour == 'black');
         return validbishop;
     }
 }
-class Queen extends ChessPiece{
-    constructor(i,j) {
-        super(i, j,"queen");
+class Queen extends ChessPiece {
+    constructor(i, j, colour) {
+        super(i, j, colour);
     }
-    
-    validateMove(pos1,pos2,target){
-        
+
+    validateMove(pos1, pos2, target) {
+
         let validqueen1 = true;
         //way is 45 or 135
         validqueen1 &&= abs(orderAlpha(pos1[0]) - orderAlpha(pos2[0])) >= 1 && abs(orderDigit(pos1[1]) - orderDigit(pos2[1])) == abs(orderAlpha(pos1[0]) - orderAlpha(pos2[0]));
@@ -154,7 +166,7 @@ class Queen extends ChessPiece{
 
 
         //cell is empty or has enemy
-        validqueen1 &&= (target == null) || (target.labels.includes('black') && origin.labels.includes('white')) || (target.labels.includes('white') && origin.labels.includes('black'));
+        validqueen1 &&= (target == null) || (target.colour == 'black' && origin.colour == 'white') || (target.colour == 'white' && origin.colour == 'black');
 
         let validqueen2 = true;
         //way is vertiacl or horizontal
@@ -178,7 +190,7 @@ class Queen extends ChessPiece{
         }
 
         //cell is empty or has enemy
-        validqueen2 &&= (target == null) || (target.labels.includes('black') && origin.labels.includes('white')) || (target.labels.includes('white') && origin.labels.includes('black'));
-        return validqueen1 ||validqueen2;
+        validqueen2 &&= (target == null) || (target.colour == 'black' && origin.colour == 'white') || (target.colour == 'white' && origin.colour == 'black');
+        return validqueen1 || validqueen2;
     }
 }
