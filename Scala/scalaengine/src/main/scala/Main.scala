@@ -756,26 +756,49 @@ object GameEngine {
       println(step)
 
       //0 white 1 black
-      //checks for direction
+      //checks for directions up or down
       if ( checkersBoard(start._1)(start._2) == 0 )
         if (deltaY > 0) ret = false
 
       if ( checkersBoard(start._1)(start._2) == 1 )
         if (deltaY < 0) ret = false
 
+      //eating and double jump
       if (step != 1){        
+        //assuming we can jump over our own peices if it's only 1
         if (step == 2 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) != -1){
-          if ( turn == 0 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 0){
+          if ( (turn == 0 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 0) ||
+           ( turn == 1 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 1)){
             checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) = -1
             ret = true
           } 
-          if ( turn == 1 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 1){
-            checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) = -1
+          else ret = false
+        }
+        //can't jump multiple times on his own peice
+        else if (step == 4 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) != -1 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4) != -1){
+          if ( turn == 0 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) == 0 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4) == 0){
+            
+            checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) = -1
+            checkersBoard(start._1 + 3* deltaY/4)(start._2 + 3* deltaX/4) = -1
             ret = true
-          }
+          } 
+          if ( turn == 1 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) == 1 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4) == 1){
+            
+            checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) = -1
+            checkersBoard(start._1 + 3* deltaY/4)(start._2 + 3* deltaX/4) = -1
+            ret = true
+          } 
+          else ret = false
         }
       else ret = false
     }
+
+    if ( turn ==0 && end._1==7 ) {
+      checkersBoard(end._1)(end._2) = 3 //black king
+    }
+    if ( turn ==1 && end._1==0) {
+      checkersBoard(end._1)(end._2) = 2 //white king
+    } 
       
       /*checks if end place is empty*/
       if(checkersBoard(end._1)(end._2) != -1) ret = false
@@ -901,7 +924,7 @@ object GameEngine {
         Array(-1,-1,-1),
         Array(-1,-1,-1)
       )
-
+      //initial board
       var checkersBoard:Array[Array[Int]] = Array(
         Array(-1,1,-1,1,-1,1,-1,1),
         Array(1,-1,1,-1,1,-1,1,-1),
