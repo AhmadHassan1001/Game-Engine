@@ -15,7 +15,7 @@ class AbstractGameEngine {
 
             // main loop
             setInterval(() => {
-                let input = prompt("Enter your input at the form of ##-## (eg. a1-b3)");
+                let input = prompt("Enter your input");
 
                 if (input) {
                     let valid;
