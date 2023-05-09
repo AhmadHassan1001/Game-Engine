@@ -31,6 +31,13 @@ class GameFactory {
                 rows = 3;
                 columns = 3;
                 return new TicTacToe([], rows, columns);
+            }
+
+            case 'Queens': {
+                rows = 8;
+                columns = 8;
+                return new Queens([], rows, columns);
+            }
         }
     }
 }
