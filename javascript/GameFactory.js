@@ -29,6 +29,12 @@ class GameFactory {
                 columns = 9;
                 return new Sudoku([], rows, columns);
             }
+
+            case 'Queens': {
+                rows = 8;
+                columns = 8;
+                return new Queens([], rows, columns);
+            }
         }
     }
 }
