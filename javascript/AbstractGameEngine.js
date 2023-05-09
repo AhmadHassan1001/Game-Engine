@@ -15,7 +15,7 @@ class AbstractGameEngine {
 
             // main loop
             setInterval(() => {
-                let input = prompt("Enter your input at the form of ##-## (eg. a1-b3)");
+                let input = prompt("Enter your input");
 
                 if (input) {
                     let valid;
@@ -50,23 +50,25 @@ class AbstractGameEngine {
         background(255);
     }
 
-    DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight) {
+    DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight, offset) {
 
         strokeWeight(1);
 
-        for (let i = 0; i <= columns; i++) {
+        for (let i = 1; i <= columns; i++) {
             let c = char(unchar('a') + i - 1);
             textSize(30);
             fill(0, 0, 0, 255);
-            text(c, i * tileWidth - 20, 25);
-            text(c, i * tileWidth - 20, canvasHeight - 5);
+            textAlign('center', 'alphabetic');
+            text(c, (i - 1) * tileWidth + offset / 2 + tileWidth / 2, 25);
+            text(c, (i - 1) * tileWidth + offset / 2 + tileWidth / 2, canvasHeight - 5);
         }
 
-        for (let i = 0; i <= rows; i++) {
+        for (let i = 1; i <= rows; i++) {
             textSize(30);
+            textAlign('left', 'alphabetic');
             fill(0, 0, 0, 255);
-            text(rows - i + 1, 5, i * tileHeight);
-            text(rows - i + 1, canvasWidth - 25, i * tileHeight);
+            text(rows - i + 1, 5, (i - 1) * tileHeight + tileHeight / 2 + offset / 2 + 10);
+            text(rows - i + 1, canvasWidth - 25, (i - 1) * tileHeight + tileHeight / 2 + offset / 2 + 10);
         }
     }
 
