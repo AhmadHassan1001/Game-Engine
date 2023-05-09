@@ -27,7 +27,7 @@ class Sudoku extends AbstractGameEngine {
         line((canvasWidth - offset) / 3 - 5 + offset / 2, 0, (canvasWidth - offset) / 3 - 5 + offset / 2, canvasHeight);
         line((canvasHeight - offset) / 3 * 2 - 5 + offset / 2, 0, (canvasHeight - offset) / 3 * 2 - 5 + offset / 2, canvasHeight);
         
-        this.DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight);
+        this.DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight, offset);
         this.PieceDrawer(map, tileWidth, tileHeight, offset);
     }
 
@@ -75,7 +75,7 @@ class Sudoku extends AbstractGameEngine {
         )
             return [false, map];
         
-        let rowIndex =  9 - orderDigit(tileNumber);
+        let rowIndex =  rows - orderDigit(tileNumber);
         let columnIndex = orderAlpha(tileLetter);
         
         // if (this.originalBoard[rowIndex][columnIndex] != null)

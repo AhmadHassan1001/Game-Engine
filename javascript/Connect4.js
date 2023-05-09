@@ -36,6 +36,8 @@ class ConnectFour extends AbstractGameEngine {
             text(c, i * tileWidth - 20, canvasHeight - 5);
         }
 
+        this.DrawText(columns, tileWidth, canvasHeight);
+
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < columns; j++) {
                 strokeWeight(3);
@@ -44,6 +46,19 @@ class ConnectFour extends AbstractGameEngine {
             }
         }
     }
+
+    DrawText(columns, tileWidth, canvasHeight) {
+
+        for (let i = 0; i <= columns; i++) {
+            let c = char(unchar('a') + i - 1);
+            textSize(30);
+            fill(0, 0, 0, 255);
+            text(c, i * tileWidth - 20, 25);
+            text(c, i * tileWidth - 20, canvasHeight - 5);
+        }
+    }
+
+    
 
     Controller(map, input, player) {
 
