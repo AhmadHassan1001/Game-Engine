@@ -958,7 +958,6 @@ object GameEngine {
         Array(0,-1,-1,-1,0,-1,0,-1)
       )   */                 
 
-
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
         var j = 0; //to move Selector arrow
