@@ -51,7 +51,7 @@ class Checker extends AbstractGameEngine {
         const tileHeight = (canvasHeight - offset) / rows;
 
         this.SquareBoardDrawer(rows, columns, primaryColour, secondaryColour, tileWidth, tileHeight, offset);
-        this.DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight);
+        this.DrawText(rows, columns, tileWidth, tileHeight, canvasWidth, canvasHeight, offset);
         this.PieceDrawer(map, tileWidth, tileHeight, offset);
     }
 

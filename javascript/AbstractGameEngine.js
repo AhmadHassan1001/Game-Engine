@@ -72,6 +72,8 @@ class AbstractGameEngine {
         }
     }
 
+    PieceDrawer(map, tileWidth, tileHeight, offset) {}
+
     SquareBoardDrawer(rows, columns, primaryColour, secondaryColour, tileWidth, tileHeight, offset) {
 
         strokeWeight(1);

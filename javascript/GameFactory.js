@@ -30,12 +30,10 @@ class GameFactory {
                 columns = 8;
                 return new Queens([], rows, columns);
 
-            }
-            case 'Checker': {
+            case 'Checkers':
                 rows = 8;
                 columns = 8;
                 return new Checker([], rows, columns);
-            }
         }
     }
 }
