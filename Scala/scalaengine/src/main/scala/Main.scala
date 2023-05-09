@@ -353,8 +353,11 @@ object GameEngine {
               } {
               val x = (col * 57) + 75
               val y = (row * 57) + 75
-              if(Board(row)(col) == 1) g.drawImage(readImage("Checkers/1"),x,y,50,50,null)
-              if(Board(row)(col) == 0) g.drawImage(readImage("Checkers/0"),x,y,50,50,null)
+              if (Board(row)(col) != -1){
+              val n = Board(row)(col).toString()
+              g.drawImage(readImage("Checkers/"+n),x,y,50,50,null)
+            }
+              
             }
           }  
         } 
@@ -741,10 +744,10 @@ object GameEngine {
       if(checkersBoard(start._1)(start._2) == -1) ret = false
 
       /*if peice at start position is black and it's white turn then return false*/
-      if(checkersBoard(start._1)(start._2) == 0 && turn == 0) ret = false
+      if( checkersBoard(start._1)(start._2)%2 == 0  && turn == 0) ret = false
 
       /*if peice at start position is white and it's Black white turn then return false*/
-      if(checkersBoard(start._1)(start._2) == 1 && turn == 1) ret = false
+      if( checkersBoard(start._1)(start._2)%2 == 1  && turn == 1) ret = false
 
       var deltaX = end._2 - start._2 
       var deltaY = end._1 - start._1
@@ -759,8 +762,8 @@ object GameEngine {
       if (step != 1){        
         //assuming we can jump over our own peices if it's only 1
         if (step == 2 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) != -1){
-          if ( (turn == 0 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 0) ||
-           ( turn == 1 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) == 1)){
+          if ( (turn == 0 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2)%2 == 0) ||
+           ( turn == 1 && checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2)%2 == 1)){
             checkersBoard(start._1 + deltaY/2)(start._2 + deltaX/2) = -1
             ret = true
           } 
@@ -768,13 +771,13 @@ object GameEngine {
         }
         //can't jump multiple times on his own peice
         else if (step == 4 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) != -1 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4) != -1){
-          if ( turn == 0 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) == 0 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4) == 0){
+          if ( turn == 0 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4)%2 == 0 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4)%2 == 0){
             
             checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) = -1
             checkersBoard(start._1 + 3* deltaY/4)(start._2 + 3* deltaX/4) = -1
             ret = true
           } 
-          if ( turn == 1 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) == 1 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4) == 1){
+          if ( turn == 1 && checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4)%2 == 1 && checkersBoard(start._1 + 3*deltaY/4)(start._2 + 3*deltaX/4)%2 == 1){
             
             checkersBoard(start._1 + deltaY/4)(start._2 + deltaX/4) = -1
             checkersBoard(start._1 + 3* deltaY/4)(start._2 + 3* deltaX/4) = -1
@@ -785,27 +788,26 @@ object GameEngine {
         else ret = false
     }
 
+      //0 white 1 black
+      //checks for directions up or down for normal troops
+      if ( checkersBoard(start._1)(start._2) == 0 )
+        if (deltaY > 0) ret = false
 
-        //0 white 1 black
-    //checks for directions up or down
-    if ( checkersBoard(start._1)(start._2) == 0 )
-      if (deltaY > 0) ret = false
-
-    if ( checkersBoard(start._1)(start._2) == 1 )
-      if (deltaY < 0) ret = false
+      if ( checkersBoard(start._1)(start._2) == 1 )
+        if (deltaY < 0) ret = false
 
 
-    if ( turn ==0 && end._1==7 ) {
-      checkersBoard(start._1)(start._2) = 3 //black king
-      println("black king")
-      ret = true
-    }
+      if ( turn ==0 && end._1==7 ) {
+        checkersBoard(start._1)(start._2) = 3 //black king
+        println("black king")
+        ret = true
+      }
 
-    if ( turn ==1 && end._1==0) {
-      checkersBoard(start._1)(start._2) = 2 //white king
-      println("white king")
-      ret = true
-    } 
+      if ( turn ==1 && end._1==0) {
+        checkersBoard(start._1)(start._2) = 2 //white king
+        println("white king")
+        ret = true
+      } 
       
       /*checks if end place is empty*/
       if(checkersBoard(end._1)(end._2) != -1) ret = false
