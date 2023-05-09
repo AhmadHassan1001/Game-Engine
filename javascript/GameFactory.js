@@ -4,14 +4,7 @@ class GameFactory {
 
         let rows, columns;
         switch (game) {
-            // case 'Tic-Tac-Toe': controller = new ConnectFourController(); drawer = new ConnectFourDrawer(controller.drawerMap); break;
-            // case 'Connect-4'  : controller = new ConnectFourController(); drawer = new ConnectFourDrawer(controller.drawerMap); break;
-            // case 'Checkers'   : controller = new ConnectFourController(); drawer = new ConnectFourDrawer(controller.drawerMap); break;
-            // case 'Chess'      : return new Chess();
-            // case 'Sudoku'     : return new Sudoku();
-            // case '8-Queens'   : controller = new ConnectFourController(); drawer = new ConnectFourDrawer(controller.drawerMap); break;
-
-
+            
             case 'Chess':
                 rows = 8;
                 columns = 8;
@@ -31,13 +24,11 @@ class GameFactory {
                 rows = 3;
                 columns = 3;
                 return new TicTacToe([], rows, columns);
-            }
 
-            case 'Queens': {
+            case '8-Queens':
                 rows = 8;
                 columns = 8;
                 return new Queens([], rows, columns);
-            }
         }
     }
 }
