@@ -934,7 +934,7 @@ object GameEngine {
         Array(-1,-1,-1)
       )
       //initial board
-      /*
+      
       var checkersBoard:Array[Array[Int]] = Array(
         Array(-1,1,-1,1,-1,1,-1,1),
         Array(1,-1,1,-1,1,-1,1,-1),
@@ -944,7 +944,8 @@ object GameEngine {
         Array(0,-1,0,-1,0,-1,0,-1),
         Array(-1,0,-1,0,-1,0,-1,0),
         Array(0,-1,0,-1,0,-1,0,-1)
-      )           */
+      )           
+/*
 //for debugging
       var checkersBoard:Array[Array[Int]] = Array(
         Array(-1,1,-1,-1,-1,1,-1,1),
@@ -955,7 +956,7 @@ object GameEngine {
         Array(0,-1,0,-1,0,-1,0,-1),
         Array(-1,0,-1,1,-1,0,-1,0),
         Array(0,-1,-1,-1,0,-1,0,-1)
-      )                    
+      )   */                 
 
 
       //drawing the menu
