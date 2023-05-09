@@ -755,14 +755,6 @@ object GameEngine {
       var step = Math.abs(deltaY)
       println(step)
 
-      //0 white 1 black
-      //checks for directions up or down
-      if ( checkersBoard(start._1)(start._2) == 0 )
-        if (deltaY > 0) ret = false
-
-      if ( checkersBoard(start._1)(start._2) == 1 )
-        if (deltaY < 0) ret = false
-
       //eating and double jump
       if (step != 1){        
         //assuming we can jump over our own peices if it's only 1
@@ -790,22 +782,37 @@ object GameEngine {
           } 
           else ret = false
         }
-      else ret = false
+        else ret = false
     }
 
+
+        //0 white 1 black
+    //checks for directions up or down
+    if ( checkersBoard(start._1)(start._2) == 0 )
+      if (deltaY > 0) ret = false
+
+    if ( checkersBoard(start._1)(start._2) == 1 )
+      if (deltaY < 0) ret = false
+
+
     if ( turn ==0 && end._1==7 ) {
-      checkersBoard(end._1)(end._2) = 3 //black king
+      checkersBoard(start._1)(start._2) = 3 //black king
+      println("black king")
+      ret = true
     }
+
     if ( turn ==1 && end._1==0) {
-      checkersBoard(end._1)(end._2) = 2 //white king
+      checkersBoard(start._1)(start._2) = 2 //white king
+      println("white king")
+      ret = true
     } 
       
       /*checks if end place is empty*/
       if(checkersBoard(end._1)(end._2) != -1) ret = false
 
       if(ret) {
-        checkersBoard(Math.abs(end._1))(end._2) = checkersBoard(start._1)(start._2)
-          checkersBoard(start._1)(start._2) = -1
+        checkersBoard(end._1)(end._2) = checkersBoard(start._1)(start._2)
+        checkersBoard(start._1)(start._2) = -1
         true
       }
         else false
@@ -925,6 +932,7 @@ object GameEngine {
         Array(-1,-1,-1)
       )
       //initial board
+      /*
       var checkersBoard:Array[Array[Int]] = Array(
         Array(-1,1,-1,1,-1,1,-1,1),
         Array(1,-1,1,-1,1,-1,1,-1),
@@ -934,7 +942,18 @@ object GameEngine {
         Array(0,-1,0,-1,0,-1,0,-1),
         Array(-1,0,-1,0,-1,0,-1,0),
         Array(0,-1,0,-1,0,-1,0,-1)
-      )                           
+      )           */
+//for debugging
+      var checkersBoard:Array[Array[Int]] = Array(
+        Array(-1,1,-1,-1,-1,1,-1,1),
+        Array(1,-1,0,-1,1,-1,1,-1),
+        Array(-1,1,-1,1,-1,1,-1,1),
+        Array(-1,-1,-1,-1,-1,-1,-1,-1),
+        Array(-1,-1,-1,-1,-1,-1,-1,-1),
+        Array(0,-1,0,-1,0,-1,0,-1),
+        Array(-1,0,-1,1,-1,0,-1,0),
+        Array(0,-1,-1,-1,0,-1,0,-1)
+      )                    
 
 
       //drawing the menu
