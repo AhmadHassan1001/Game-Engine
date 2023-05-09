@@ -29,6 +29,7 @@ class CheckerPiece extends Piece {
         console.log(this.colour);
 
         let validchecker = false;
+        let isJump=false;
         if (!this.isKing) {
             //corner cells has enemy
             validchecker ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 1 : -1)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1 && target == null;
@@ -40,7 +41,8 @@ class CheckerPiece extends Piece {
             if (preposX >= 0 && preposX < 8 && preposY >= 0 && preposY < 8) {
                 let pretarget = (map[preposX][preposY]);
                 // it is a jump
-                validchecker ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 2 : -2)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null;
+                validchecker ||= isJump=orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 2 : -2)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null;
+                // console.log("jump not king",Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null)
             }
 
         } else {
@@ -54,15 +56,15 @@ class CheckerPiece extends Piece {
                 let pretarget = (map[preposX][preposY]);
                 // console.log('index',8 - 1 - (orderDigit(pos1[1]) - 1) + ((orderDigit(pos2[1]) - orderDigit(pos1[1])) > 0 ? -1 : 1),orderAlpha(pos1[0]) + ((orderAlpha(pos2[0]) - orderAlpha(pos1[0])) > 0 ? 1 : -1))
                 // it is a jump
-                validchecker ||= Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null;
-
+                validchecker ||= isJump=Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null;
+                // console.log("jump",Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null)
             }
 
 
 
 
         }
-        return validchecker;
+        return [validchecker,isJump];
     }
 }
 
