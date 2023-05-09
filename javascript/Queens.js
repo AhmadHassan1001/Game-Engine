@@ -54,6 +54,10 @@ class Queens extends AbstractGameEngine {
         // Validate action
         // validate there is object to move
         let origin = map[8 - 1 - (orderDigit(pos[1]) - 1)][orderAlpha(pos[0])];
+        if(origin!=null){///TO BE TESTED
+            map[8 - 1 - (orderDigit(pos[1]) - 1)][orderAlpha(pos[0])]=null;
+            return [true, map];
+        }
         valid &&= origin == null;
 
         // validate the 4 directions H,V,45,135

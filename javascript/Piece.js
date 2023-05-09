@@ -12,6 +12,62 @@ class ConnectFourPiece extends Piece {
     }
 }
 
+class CheckerPiece extends Piece {
+
+    constructor(colour) {
+        super(colour);
+        if (colour == 'white') {
+            this.x = this.y = 55;
+        } else {
+
+            this.x = 180;
+            this.y = 55
+        }
+        this.isKing = false;
+    }
+    validateMove(pos1, pos2, target, map) {
+        console.log(this.colour);
+
+        let validchecker = false;
+        let isJump=false;
+        if (!this.isKing) {
+            //corner cells has enemy
+            validchecker ||= orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 1 : -1)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1 && target == null;
+            console.log(orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 1 : -1)), Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1, target == null)
+            //todo:check index is valid
+            // console.log(map[8-1-(orderDigit(pos1[1])-1) + ((this.colour == 'black') ? -1 : 1)][orderAlpha(pos1[0])+((orderAlpha(pos2[0]) - orderAlpha(pos1[0]))>0?1:-1)],"index",map,8-1-(orderDigit(pos1[1])-1) + ((this.colour == 'black') ? -1 : 1),orderAlpha(pos1[0])+((orderAlpha(pos2[0]) - orderAlpha(pos1[0]))>0?1:-1))
+            let preposX = 8 - 1 - (orderDigit(pos1[1]) - 1) + ((this.colour == 'black') ? -1 : 1), preposY = orderAlpha(pos1[0]) + ((orderAlpha(pos2[0]) - orderAlpha(pos1[0])) > 0 ? 1 : -1);
+
+            if (preposX >= 0 && preposX < 8 && preposY >= 0 && preposY < 8) {
+                let pretarget = (map[preposX][preposY]);
+                // it is a jump
+                validchecker ||= isJump=orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 2 : -2)) && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null;
+                // console.log("jump not king",Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null)
+            }
+
+        } else {
+            //corner cells has enemy
+            validchecker ||= Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 1 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1 && target == null;
+            // console.log(orderDigit(pos2[1]) == (orderDigit(pos1[1]) + ((this.colour == 'black') ? 1 : -1)), Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 1, target == null)
+            //todo:check index is valid
+            // console.log(map[8-1-(orderDigit(pos1[1])-1) + ((this.colour == 'black') ? -1 : 1)][orderAlpha(pos1[0])+((orderAlpha(pos2[0]) - orderAlpha(pos1[0]))>0?1:-1)],"index",map,8-1-(orderDigit(pos1[1])-1) + ((this.colour == 'black') ? -1 : 1),orderAlpha(pos1[0])+((orderAlpha(pos2[0]) - orderAlpha(pos1[0]))>0?1:-1))
+            let preposX = 8 - 1 - (orderDigit(pos1[1]) - 1) + ((orderDigit(pos2[1]) - orderDigit(pos1[1])) > 0 ? -1 : 1), preposY = orderAlpha(pos1[0]) + ((orderAlpha(pos2[0]) - orderAlpha(pos1[0])) > 0 ? 1 : -1);
+            if (preposX >= 0 && preposX < 8 && preposY >= 0 && preposY < 8) {
+                let pretarget = (map[preposX][preposY]);
+                // console.log('index',8 - 1 - (orderDigit(pos1[1]) - 1) + ((orderDigit(pos2[1]) - orderDigit(pos1[1])) > 0 ? -1 : 1),orderAlpha(pos1[0]) + ((orderAlpha(pos2[0]) - orderAlpha(pos1[0])) > 0 ? 1 : -1))
+                // it is a jump
+                validchecker ||= isJump=Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null;
+                // console.log("jump",Math.abs(orderDigit(pos2[1]) - orderDigit(pos1[1])) == 2 && Math.abs(orderAlpha(pos2[0]) - orderAlpha(pos1[0])) == 2 && target == null && (pretarget.colour == 'black' && this.colour == 'white' || pretarget.colour == 'white' && this.colour == 'black') && pretarget != null)
+            }
+
+
+
+
+        }
+        return [validchecker,isJump];
+    }
+}
+
 class ChessPiece extends Piece {
 
     constructor(i, j, colour) {
@@ -24,7 +80,7 @@ class ChessPiece extends Piece {
         this.y = i * pieceHeight;
     }
 
-    validateMove(pos1, pos2, target) {}
+    validateMove(pos1, pos2, target) { }
 }
 
 class Pawn extends ChessPiece {

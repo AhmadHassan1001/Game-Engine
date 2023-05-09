@@ -29,6 +29,13 @@ class GameFactory {
                 rows = 8;
                 columns = 8;
                 return new Queens([], rows, columns);
+
+            }
+            case 'Checker': {
+                rows = 8;
+                columns = 8;
+                return new Checker([], rows, columns);
+            }
         }
     }
 }
