@@ -1,26 +1,19 @@
 import scala.swing._
 import scala.swing.event._
 import scala.collection.mutable._
-import java.awt.{Color, Graphics2D, BasicStroke}
-import java.awt.geom._
+import java.awt.{BasicStroke, Color, Graphics2D}
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
-import java.io.FileInputStream
 import java.io.File
-import javax.swing.border.Border
-import javax.swing.SwingConstants
-import java.awt
-import javax.swing.JFrame
 import scala.util.Random
 import scala.util.control.Breaks
 
 object GameEngine {
 
-
   def AbstractDrawer (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) = {
 
-    var width = 700;
-    var height = 600;
+    val width = 700
+    val height = 600
 
     g.setColor(Color.WHITE)
     g.fillRect(0, 0, width, height)
@@ -50,7 +43,7 @@ object GameEngine {
             if (((row + 1) * (col + 1)) % 3 == 0) g.setColor(color1)
             else g.setColor(color2)
 
-            g.drawLine(x + tileSize,75,x + tileSize,75 + (tileSize * (rows)))
+            g.drawLine(x + tileSize,75,x + tileSize,75 + (tileSize * rows))
             g.drawLine(75,y + tileSize,75 + (tileSize * (cols)),y + tileSize)
           }
         
@@ -82,7 +75,7 @@ object GameEngine {
 
     if(input.size != 2)return false
     
-    var Pos:Tuple2[Int,Int] = (input(1).asDigit,input(0)-'a'+1)
+    val Pos:(Int, Int) = (input(1).asDigit,input(0)-'a'+1)
     if(Pos._1 <= 0 || Pos._1 > rows )return false
     if(Pos._2 <= 0 || Pos._2 > cols )return false
 
@@ -110,7 +103,7 @@ object GameEngine {
             preferredSize = new Dimension(670,20)
             background = new Color(0xb1e9fe)
 
-            var str = gameName match{
+            var str: String = gameName match{
               case "Chess"|"8Queens"|"Checkers" => "Start Position"
               case "XO" | "Connect4" |"Suduko" => "Position"
             }
@@ -141,9 +134,9 @@ object GameEngine {
             background = new Color(0xb1e9fe)
 
             var txt = gameName match{
-              case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
+              case "Chess"|"Checkers" => "Black's  Turn"
               case "XO" | "Connect4" => "Red Player's Turn"
-              case "Suduko" =>""
+              case "Suduko"|"8Queens" =>""
             }
 
             var inputField1 = new TextField("")
@@ -195,17 +188,17 @@ object GameEngine {
                   if(turn%2 == 0)
                   {
                     turnlabel.text = gameName match{
-                      case "Chess"|"8Queens"|"Checkers" => "Black's  Turn"
+                      case "Chess"|"Checkers" => "Black's  Turn"
                       case "XO" | "Connect4" => "Red Player's Turn"
-                      case "Suduko" => ""
+                      case "Suduko"|"8Queens" => ""
                     }
                   } 
                   else 
                   {
                     turnlabel.text = gameName match{
-                      case "Chess"|"8Queens"|"Checkers" => "White's  Turn"
+                      case "Chess"|"Checkers" => "White's  Turn"
                       case "XO" | "Connect4" => "Yellow Player's Turn"
-                      case "Suduko" => ""
+                      case "Suduko"|"8Queens" => ""
                     }
                   }
                   //Reset Input Fields After each Move
@@ -241,7 +234,7 @@ object GameEngine {
   def main(args: Array[String]): Unit = {
 
     //Chess Drawer
-    val Chess_Drawer = (Board:Seq[Array[Tuple2[Int,String]]]) =>{
+    val Chess_Drawer = (Board:Seq[Array[(Int, String)]]) =>{
       var rows = 8
       var cols = 8
 
@@ -333,7 +326,7 @@ object GameEngine {
               XOArray(row)(col) match {
                 case 0 =>  g.setColor(Color.RED);g.drawString("X",x,y)
                 case 1 =>  g.setColor(Color.BLUE);g.drawString("O",x,y)
-                case _ => ""
+                case _ =>
               }
             }
           }  
@@ -458,7 +451,7 @@ object GameEngine {
       frame
     }
 
-    val Chess_Controller = (chessBoard:Seq[Array[Tuple2[Int,String]]],input:Array[String],turn:Int /*0->Black,1->white*/) => {
+    val Chess_Controller = (chessBoard:Seq[Array[(Int, String)]], input:Array[String], turn:Int /*0->Black,1->white*/) => {
 
       var rows = 8
       var cols = 8
@@ -469,8 +462,8 @@ object GameEngine {
 
       if(ret){
         /*tuples containing position of peice in the Chess array (row,column)*/
-        var start:Tuple2[Int,Int] = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
-        var end  :Tuple2[Int,Int] = (Math.abs(input(1)(1).asDigit-rows),input(1)(0)-'a')
+        var start:(Int, Int) = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
+        var end  :(Int, Int) = (Math.abs(input(1)(1).asDigit-rows),input(1)(0)-'a')
         
         /*if start peice is null then return false*/
         if(chessBoard(start._1)(start._2) == null)ret = false
@@ -704,7 +697,7 @@ object GameEngine {
       if(!InBoard(input(0),rows,cols))ret = false
 
       if(ret){
-        var pos:Tuple2[Int,Int] = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
+        var pos:(Int, Int) = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
         if(XOArray(pos._1)(pos._2) == -1)XOArray(pos._1)(pos._2) = Turn
         else ret = false
       }
@@ -742,8 +735,8 @@ object GameEngine {
 
       if(ret){
         /*tuples containing position of peice in the Checkers array (row,column)*/
-        var start:Tuple2[Int,Int] = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
-        var end  :Tuple2[Int,Int] = (Math.abs(input(1)(1).asDigit-rows),input(1)(0)-'a')
+        var start:(Int, Int) = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
+        var end  :(Int, Int) = (Math.abs(input(1)(1).asDigit-rows),input(1)(0)-'a')
 
         //checks if the first peice is valid
         if(checkersBoard(start._1)(start._2) == -1) ret = false
@@ -820,9 +813,9 @@ object GameEngine {
         if(ret) {
           checkersBoard(end._1)(end._2) = checkersBoard(start._1)(start._2)
           checkersBoard(start._1)(start._2) = -1
-          true
+          ret = true
         }
-          else false
+        else ret = false
       }
       
       ret
@@ -839,7 +832,7 @@ object GameEngine {
 
       if(ret){
         /*tuples containing position of peice in the Chess array (row,column)*/
-        var start:Tuple2[Int,Int] = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
+        var start:(Int, Int) = (Math.abs(input(0)(1).asDigit-rows),input(0)(0)-'a')
         var queensCnt = Board.flatten.filter(x => x==1).size
     
         if(Board(start._1)(start._2) == 0){
@@ -848,7 +841,7 @@ object GameEngine {
           }
           else{
             var acc = true
-            var dir:Array[Tuple2[Int,Int]] = Array((-1,-1),(-1,1),(1,-1),(1,1),
+            var dir:Array[(Int, Int)] = Array((-1,-1),(-1,1),(1,-1),(1,1),
                                                    (0,1),(1,0),(-1,0),(0,-1))
 
             val loop = new Breaks;
@@ -972,10 +965,10 @@ object GameEngine {
                                   (11,"KingBlack"),(9,"BishopBlack"),(8,"KnightBlack"),(7,"RookBlack"))
 
 
-      var chessBoard = Array.ofDim[Tuple2[Int,String]](8,8)
+      var chessBoard = Array.ofDim[(Int, String)](8,8)
       chessBoard(0) = chessImageArrayW
-      chessBoard(1) = Array.fill[Tuple2[Int,String]](8)(6,"PawnWhite")
-      chessBoard(6) = Array.fill[Tuple2[Int,String]](8)(12,"PawnBlack")
+      chessBoard(1) = Array.fill[(Int, String)](8)(6,"PawnWhite")
+      chessBoard(6) = Array.fill[(Int, String)](8)(12,"PawnBlack")
       chessBoard(7) = chessImageArrayB  
 
       //Connect4 Array
@@ -1041,8 +1034,8 @@ object GameEngine {
           case KeyPressed(_, c, _, _) => c match {
             
             case Key.S =>{
-              j+=1;
-              if(j == gamesCnt)j=0;
+              j+=1
+              if(j == gamesCnt)j=0
               repaint()
             }
 
@@ -1053,8 +1046,8 @@ object GameEngine {
             }
 
             case Key.Enter =>{
-              input = Games(j);
-              
+              input = Games(j)
+
               input match {
                 case "Chess"    => abstractEngine(input,Chess_Drawer,Chess_Controller,chessBoard)
                 case "8Queens"  => abstractEngine(input,Queens_Drawer,Queens_Controller,Queens)
@@ -1066,6 +1059,8 @@ object GameEngine {
 
               dispose()
             }
+            case _ => {}
+
             requestFocus()
           }
         }
