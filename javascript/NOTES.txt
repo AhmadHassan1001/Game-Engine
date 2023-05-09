@@ -1,0 +1,6 @@
+for each action set validation
+- parameters sent as strings
+- validate the parameters
+- validate the action
+
+need webpack
