@@ -202,7 +202,7 @@
         "platform": {
             "name": "jvm",
             "config": {
-                "home": "C:\\Program Files\\Java\\jdk-19",
+                "home": "C:\\Users\\MARWAN\\.jdks\\openjdk-19.0.1",
                 "options": [
                     "-Duser.dir=C:\\Users\\MARWAN\\Desktop\\Computer Engineering Year 2\\2nd Semester\\Programming Paradims\\Projects\\Game-Engine\\Scala\\scalaengine\\project"
                 ]
