@@ -106,6 +106,7 @@ object GameEngine {
             var str: String = gameName match{
               case "Chess"|"8Queens"|"Checkers" => "Start Position"
               case "XO" | "Connect4" |"Suduko" => "Position"
+              case _ => "position"
             }
 
             contents += Swing.HStrut(20)
@@ -123,6 +124,7 @@ object GameEngine {
                 contents += new Label("value"){font = new Font("Arial", 1, 12)}
               }
               case "8Queens"|"XO" | "Connect4" =>{}
+              case _ =>{}
             }
 
           }
@@ -137,6 +139,7 @@ object GameEngine {
               case "Chess"|"Checkers" => "Black's  Turn"
               case "XO" | "Connect4" => "Red Player's Turn"
               case "Suduko"|"8Queens" =>""
+              case _ => ""
             }
 
             var inputField1 = new TextField("")
@@ -162,6 +165,9 @@ object GameEngine {
                 contents += inputField2
               }
               case "8Queens"|"XO"|"Connect4" =>{
+                contents += Swing.HStrut(100)
+              }
+              case _ =>{
                 contents += Swing.HStrut(100)
               }
             }
@@ -191,6 +197,7 @@ object GameEngine {
                       case "Chess"|"Checkers" => "Black's  Turn"
                       case "XO" | "Connect4" => "Red Player's Turn"
                       case "Suduko"|"8Queens" => ""
+                      case _ => ""
                     }
                   } 
                   else 
@@ -199,6 +206,7 @@ object GameEngine {
                       case "Chess"|"Checkers" => "White's  Turn"
                       case "XO" | "Connect4" => "Yellow Player's Turn"
                       case "Suduko"|"8Queens" => ""
+                      case _ => ""
                     }
                   }
                   //Reset Input Fields After each Move
@@ -880,7 +888,7 @@ object GameEngine {
 
       var input = "Connect4" //dummy
       
-      val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")
+      val Games: List[String] = List("Chess", "Connect4", "XO", "Checkers", "Suduko", "8Queens")  //newGame
 
       val gamesCnt = Games.size
 
