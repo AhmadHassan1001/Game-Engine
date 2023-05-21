@@ -8,7 +8,7 @@ class AbstractGameEngine {
         for (let i = 0; i < rows; i++)
             for (let j = 0; j < columns; j++)
                 map[i].push(null);
-
+        this.solve=true;
         setTimeout(() => {
             let player = 1;
             this.Drawer(map);
@@ -16,8 +16,11 @@ class AbstractGameEngine {
             // main loop
             setInterval(() => {
                 let input = prompt("Enter your input");
-
-                if (input) {
+                if(input=="solve"){
+                    this.Solve(map);
+                }
+                else if (input) {
+                    this.solve=false;
                     let valid;
                     [valid, map] = this.Controller(map, input, player);
                     console.log(valid, map);
@@ -39,6 +42,12 @@ class AbstractGameEngine {
 
     Controller(map, input, player) {}
 
+    async Solver(map){}
+    async Solve(map){
+        console.log("Solve this game")
+        await this.Solver(map);
+        await this.Drawer(map);
+    }
     Drawer(map) {
 
         const canvasWidth = 700;

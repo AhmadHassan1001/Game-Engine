@@ -54,8 +54,8 @@ class Queens extends AbstractGameEngine {
         // Validate action
         // validate there is object to move
         let origin = map[8 - 1 - (orderDigit(pos[1]) - 1)][orderAlpha(pos[0])];
-        if(origin!=null){///TO BE TESTED
-            map[8 - 1 - (orderDigit(pos[1]) - 1)][orderAlpha(pos[0])]=null;
+        if (origin != null) {///TO BE TESTED
+            map[8 - 1 - (orderDigit(pos[1]) - 1)][orderAlpha(pos[0])] = null;
             return [true, map];
         }
         valid &&= origin == null;
@@ -92,5 +92,116 @@ class Queens extends AbstractGameEngine {
         return [true, map];
 
     }
+
+    async Solver(map) {
+        let session = pl.create();
+        console.log("solving...");
+        let program = queens_program;
+        /**
+         * Is valid:
+         * Is 8 queens?
+         * * Is valid matrix? is_matrix(Mat) :-
+         * * Has 8 queens?
+         * every queen not attacked
+         */
+        function parseStringToArray(str) {
+            // Remove the trailing string (if it is present)
+            str = str.replace(/[\[\]]/g, "");
+
+
+            str = str.split('|')[0];
+            str = str.split(' = ')[1];
+
+            // Return the 2D array
+            return str.split(',');
+        }
+        
+        // session.consult(program, {
+        //     success: function () {
+        //         // Query
+        //         let goal = "is_nqueens(Ls,8).";
+        //         session.query(goal, {
+        //             success: function (goal) {
+        //                 // Answers
+        //                 console.log("my goaal:", goal);
+        //                 session.answer({
+        //                     success: function (answer) {
+        //                         /* Answer */
+        //                         console.log(session.format_answer(answer));
+
+        //                         const arr1D = (parseStringToArray(session.format_answer(answer)));
+        //                         const arr2D = [];
+
+        //                         for (let i = 0; i < 8; i++) {
+        //                             const row = [];
+        //                             for (let j = 0; j < 8; j++) {
+        //                                 row.push(arr1D[i * 8 + j]);
+        //                             }
+        //                             arr2D.push(row);
+        //                         }
+        //                         console.log(arr2D);
+        //                         for (let i = 0; i < 8; i++) {
+        //                             for (let j = 0; j < 8; j++) {
+        //                                 if(arr2D[i][j]=='q'){console.log("queen"); map[i][j]=new Queen(1, 1);}
+        //                             }
+
+        //                         }
+        //                         console.log("solution",map);
+
+        //                     },
+        //                     error: function (err) {
+        //                         /* Uncaught error */
+        //                         console.log("error", err);
+        //                     },
+        //                     fail: function () {
+        //                         /* Fail */
+        //                         console.log("fail");
+        //                     },
+        //                     limit: function () {
+        //                         /* Limit exceeded */
+        //                         console.log("limit");
+        //                     },
+        //                 });
+        //             },
+        //             error: function (err) {
+        //                 /* Error parsing goal */
+        //                 console.log("errorr")
+        //             },
+        //         });
+        //     },
+        //     error: function (err) {
+        //         /* Error parsing program */
+        //     },
+        // });
+
+        const goal = "is_nqueens(Ls,8),is_vertical_valid(Ls,0,0,1).";
+        await session.promiseConsult(program);
+        await session.promiseQuery(goal);
+
+         {
+            let answer = await session.promiseAnswer();
+            console.log(session.format_answer(answer));
+            const arr1D = (parseStringToArray(session.format_answer(answer)));
+            const arr2D = [];
+
+            for (let i = 0; i < 8; i++) {
+                const row = [];
+                for (let j = 0; j < 8; j++) {
+                    row.push(arr1D[i * 8 + j]);
+                }
+                arr2D.push(row);
+            }
+            console.log(arr2D);
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (arr2D[i][j] == 'q') { console.log("queen"); map[i][j] = new Queen(1, 1); }
+                }
+
+            }
+            console.log("solution", map);
+        }
+    }
+
+
 }
 
