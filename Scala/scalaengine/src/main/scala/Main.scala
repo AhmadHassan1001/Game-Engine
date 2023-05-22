@@ -7,6 +7,8 @@ import javax.imageio.ImageIO
 import java.io.File
 import scala.util.Random
 import scala.util.control.Breaks
+import org.jpl7._
+
 
 object GameEngine {
 
@@ -995,8 +997,22 @@ object GameEngine {
         Array(0,-1,0,-1,0,-1,0,-1)
       )  
 
-      var Queens = Array.ofDim[Int](8,8)          
-                
+      var Queens = Array.ofDim[Int](8,8)  
+
+
+      def prol(): Unit = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val q = new Query("sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+        //val qs = q.oneSolution().get()
+        /*
+        if (q.hasSolution){
+          val qsValue = q.oneSolution().get("X").toString
+          println(qsValue)
+        } */
+        //println(qs)
+      }
+      prol()                
 
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
