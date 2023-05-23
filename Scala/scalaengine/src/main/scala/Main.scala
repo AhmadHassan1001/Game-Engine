@@ -1000,19 +1000,37 @@ object GameEngine {
       var Queens = Array.ofDim[Int](8,8)  
 
 
-      def prol(): Unit = {
+      def prolSuduko(): Unit = {
         val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
         System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
-        val q = new Query("sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
-        //val qs = q.oneSolution().get()
-        /*
-        if (q.hasSolution){
-          val qsValue = q.oneSolution().get("X").toString
-          println(qsValue)
-        } */
-        //println(qs)
+        val str = "Rows = [[1,_,_,_,_,_,_,_,_]," +
+                          "[_,2,_,_,_,_,_,_,_]," +
+                          "[_,_,3,_,_,_,_,_,_]," +
+                          "[_,_,_,4,_,_,_,_,_]," +
+                          "[_,_,_,_,5,_,_,_,_]," +
+                          "[_,_,_,_,_,6,_,_,_]," +
+                          "[_,_,_,_,_,_,7,_,_]," +
+                          "[_,_,_,_,_,_,_,8,_]," +
+                          "[_,_,_,_,_,_,_,_,9]],"
+        val q = new Query( str + "sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+        val qs = q.oneSolution()
+        println(qs.toString())
+        println(",,,,,,,,,,,,,,,,,,,,,,,,,,")
       }
-      prol()                
+
+      /*
+      def prolQueens(): Unit = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = ""
+        val q = new Query( "" )
+        var qs = q.oneSolution()
+        println(qs)
+        println(",,,,,,,,,,,,,,,,,,,,,,,,,,")
+      }      prolQueens()*/   
+
+      prolSuduko() 
+            
 
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
