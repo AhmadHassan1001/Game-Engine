@@ -8,7 +8,7 @@ import java.io.File
 import scala.util.Random
 import scala.util.control.Breaks
 import org.jpl7._
-
+import scala.language.postfixOps
 
 object GameEngine {
 
@@ -71,7 +71,6 @@ object GameEngine {
     image
   }
 
-
   /*Check if a given coordinates is in the board or out*/
   def InBoard(input: String,rows:Int,cols:Int):Boolean = {
 
@@ -91,6 +90,69 @@ object GameEngine {
     state:Seq[T]
   ): Unit = 
   {
+
+      def stringfy(arg: Seq[Array[Int]], N: Int): String = {
+        var out: String = "[";
+        for (i <- 0 to N - 1) {
+          out += "["
+          for (j <- 0 to N - 1) {
+            if (arg(i)(j) == 0) {
+              out += "_";
+            } else {
+              if (arg(i)(j) >= 10)
+                out += (arg(i)(j) / 10).toString();
+              else
+                out += arg(i)(j).toString();
+            }
+
+            if (j != N - 1) {
+              out += ",";
+            }
+          }
+          out += "]"
+          if (i != N - 1) {
+            out += ",";
+          }
+        }
+        out += "]"
+        return out;
+      }
+
+      def parseStringToArray(input: String): Array[Array[Int]] = {
+        val rowPattern = "\\[(.*?)\\]".r
+        val numberPattern = "\\d+".r
+
+        val rows = rowPattern.findAllIn(input).toArray
+        val array2D = Array.ofDim[Int](rows.length, rows.length)
+
+        for ((rowString, rowIndex) <- rows.zipWithIndex) {
+          val numbers = numberPattern.findAllIn(rowString).toArray
+          for ((numString, colIndex) <- numbers.zipWithIndex) {
+            array2D(rowIndex)(colIndex) = numString.toInt
+          }
+        }
+
+        array2D
+      }
+
+      def prolSuduko(board: Seq[Array[Int]]): Seq[Array[Int]] = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = stringfy(board, 9)
+        //def stringfy(arg: Seq[Array[Int]], N: Int): String = {}
+        var qs =""
+        try {
+          val q = new Query( "Rows = " + str + ",sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+          qs = q.oneSolution().toString()          
+        }
+        catch ( Throwable => {
+            println("no sol")
+          } 
+        )      
+        parseStringToArray(qs)
+        //def parseStringToArray(input: String): Array[Array[Int]] = {}
+      }
+
     new MainFrame(null) {
       title = gameName
 
@@ -170,7 +232,20 @@ object GameEngine {
 
             contents += Swing.HStrut(50)
             contents += turnlabel
-            contents += Swing.HStrut(100)
+
+            gameName match {
+              case "Chess"|"XO"|"Connect4"|"Checkers" => {
+                contents += Swing.HStrut(100)
+              }
+              case "8Queens"|"Suduko" =>{
+                contents += Button("Solve"){
+
+                  val solved = prolSuduko(state)
+                }
+              }
+            }
+
+
 
             var turn = 0
             //input handeling
@@ -958,7 +1033,7 @@ object GameEngine {
         board
       }
 
-      val sudukoBoard = generateBoard(/*add number here for emptyspaces or leave empty for random*/)
+      var sudukoBoard = generateBoard(/*add number here for emptyspaces or leave empty for random*/)
 
       //Chess Array
       var chessImageArrayW = Array((1,"RookWhite"),(2,"KnightWhite"),(3,"BishopWhite"),(4,"QueenWhite"),
@@ -998,39 +1073,88 @@ object GameEngine {
       )  
 
       var Queens = Array.ofDim[Int](8,8)  
+/*
+      def stringfy(arg: Array[Array[Int]], N: Int): String = {
+        var out: String = "[";
+        for (i <- 0 to N - 1) {
+          out += "["
+          for (j <- 0 to N - 1) {
+            if (arg(i)(j) == 0) {
+              out += "_";
+            } else {
+              if (arg(i)(j) >= 10)
+                out += (arg(i)(j) / 10).toString();
+              else
+                out += arg(i)(j).toString();
+            }
 
-
-      def prolSuduko(): Unit = {
-        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
-        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
-        val str = "Rows = [[1,_,_,_,_,_,_,_,_]," +
-                          "[_,2,_,_,_,_,_,_,_]," +
-                          "[_,_,3,_,_,_,_,_,_]," +
-                          "[_,_,_,4,_,_,_,_,_]," +
-                          "[_,_,_,_,5,_,_,_,_]," +
-                          "[_,_,_,_,_,6,_,_,_]," +
-                          "[_,_,_,_,_,_,7,_,_]," +
-                          "[_,_,_,_,_,_,_,8,_]," +
-                          "[_,_,_,_,_,_,_,_,9]],"
-        val q = new Query( str + "sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
-        val qs = q.oneSolution()
-        println(qs.toString())
-        println(",,,,,,,,,,,,,,,,,,,,,,,,,,")
+            if (j != N - 1) {
+              out += ",";
+            }
+          }
+          out += "]"
+          if (i != N - 1) {
+            out += ",";
+          }
+        }
+        out += "]"
+        return out;
       }
 
-      /*
+      def parseStringToArray(input: String): Array[Array[Int]] = {
+        val rowPattern = "\\[(.*?)\\]".r
+        val numberPattern = "\\d+".r
+
+        val rows = rowPattern.findAllIn(input).toArray
+        val array2D = Array.ofDim[Int](rows.length, rows.length)
+
+        for ((rowString, rowIndex) <- rows.zipWithIndex) {
+          val numbers = numberPattern.findAllIn(rowString).toArray
+          for ((numString, colIndex) <- numbers.zipWithIndex) {
+            array2D(rowIndex)(colIndex) = numString.toInt
+          }
+        }
+
+        array2D
+      }
+
+      def prolSuduko(board: Array[Array[Int]]): Unit = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = stringfy(board, 9)
+        try {
+          val q = new Query( "Rows = " + str + ",sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+          val qs = q.oneSolution().toString()
+          var newboard = parseStringToArray(qs)
+          sudukoBoard = newboard
+        }
+        catch ( Throwable => println("no sol") )        
+      }
+
       def prolQueens(): Unit = {
         val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
         System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
-        val str = ""
-        val q = new Query( "" )
-        var qs = q.oneSolution()
-        println(qs)
-        println(",,,,,,,,,,,,,,,,,,,,,,,,,,")
-      }      prolQueens()*/   
+        val str = "Rows = [[_,_,1,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,1,_,_,_,_]],"
+        try {
+          val q = new Query( str + "queens(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+          val qs = q.oneSolution()
+          println(qs.toString())
+        }
+        catch ( 
+          Throwable => println("no sol") 
+          )
+        println(",,,,,,,,,,,,,,,,,,,,,,,,,,")      
+      }*/
 
-      prolSuduko() 
-            
+      //prolQueens()
+      //prolSuduko(sudukoBoard) 
 
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
