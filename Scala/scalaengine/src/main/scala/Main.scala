@@ -15,7 +15,7 @@ object GameEngine {
 
   def AbstractDrawer (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) = {
 
-    
+
     val width = 700
     val height = 600
 
@@ -126,7 +126,7 @@ object GameEngine {
           breakable{
           for (j <- 0 to N - 1){
             if (arg(i)(j) != 0) {
-              out += "1";
+              out += (j+1).toString();
               break
             } else if (j==N-1){
               out += "_";
@@ -207,6 +207,13 @@ object GameEngine {
 
         array2D
       }
+      def copyInto(map1:Seq[Array[Int]],map2:Seq[Array[Int]])={
+  for(i<-0 until map1.length){
+          for(j<-0 until map1.length){
+             map1(i)(j)=map2(i)(j);
+          }
+        }
+}
 
       def prolSuduko(board: Seq[Array[Int]]): Seq[Array[Int]] = {
         val q1 = new Query("consult('C:/Users/acer/Documents/GitHub/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
@@ -335,12 +342,18 @@ object GameEngine {
                 contents += Button("Solve"){
 
                   val solved = prolSuduko(state)
+                  copyInto(state,solved);
+                  if(oldframe != null)oldframe.dispose()
+                  oldframe = Drawer(state);
                 }
               }
               case "8Queens" =>{
                 contents += Button("Solve"){
 
                   val solved = prolQueens(state)
+                  copyInto(state,solved);
+                  if(oldframe != null)oldframe.dispose()
+                  oldframe = Drawer(state);
                 }
               }
             }
