@@ -1,5 +1,6 @@
 import scala.swing._
 import scala.swing.event._
+import scala.util.control.Breaks._
 import scala.collection.mutable._
 import java.awt.{BasicStroke, Color, Graphics2D}
 import java.awt.image.BufferedImage
@@ -7,11 +8,14 @@ import javax.imageio.ImageIO
 import java.io.File
 import scala.util.Random
 import scala.util.control.Breaks
+import org.jpl7._
+import scala.language.postfixOps
 
 object GameEngine {
 
   def AbstractDrawer (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) = {
 
+    
     val width = 700
     val height = 600
 
@@ -69,7 +73,6 @@ object GameEngine {
     image
   }
 
-
   /*Check if a given coordinates is in the board or out*/
   def InBoard(input: String,rows:Int,cols:Int):Boolean = {
 
@@ -84,11 +87,177 @@ object GameEngine {
 
   def abstractEngine[T](
     gameName:String,
-    Drawer: (Seq[T]) => MainFrame,
-    Controller: (Seq[T],Array[String],Int) => Boolean,
-    state:Seq[T]
+    Drawer: (Seq[Array[Int]]) => MainFrame,
+    Controller: (Seq[Array[Int]],Array[String],Int) => Boolean,
+    state:Seq[Array[Int]]
   ): Unit = 
   {
+
+      def stringfy(arg: Seq[Array[Int]], N: Int): String = {
+
+        var out: String = "[";
+        for (i <- 0 to N - 1) {
+          out += "["
+          for (j <- 0 to N - 1) {
+            if (arg(i)(j) == 0) {
+              out += "_";
+            } else {
+              if (arg(i)(j) >= 10)
+                out += (arg(i)(j) / 10).toString();
+              else
+                out += arg(i)(j).toString();
+            }
+
+            if (j != N - 1) {
+              out += ",";
+            }
+          }
+          out += "]"
+          if (i != N - 1) {
+            out += ",";
+          }
+        }
+        out += "]"
+        return out;
+      }
+
+      def toQArray(arg: Seq[Array[Int]], N: Int): String = {
+        var out: String = "[";
+        for (i <- 0 to N - 1) {
+          breakable{
+          for (j <- 0 to N - 1){
+            if (arg(i)(j) != 0) {
+              out += "1";
+              break
+            } else if (j==N-1){
+              out += "_";
+            }
+
+          }
+
+          }
+          if (i != N - 1) {
+            out += ",";
+          }
+        }
+        out += "]"
+        System.out.println(out);
+        return out;
+      }
+
+      def parseStringToArray(input: String): Seq[Array[Int]] = {
+        val rowPattern = "\\[(.*?)\\]".r
+        val numberPattern = "\\d+".r
+
+        val rows = rowPattern.findAllIn(input).toArray
+        val array2D = Array.ofDim[Int](rows.length, rows.length)
+
+        for ((rowString, rowIndex) <- rows.zipWithIndex) {
+          val numbers = numberPattern.findAllIn(rowString).toArray
+          for ((numString, colIndex) <- numbers.zipWithIndex) {
+            array2D(rowIndex)(colIndex) = numString.toInt
+          }
+        }
+
+        array2D
+      }
+      
+      def parseStringToQArray(input: String):Array[Int] = {
+        var out=input.split("[^-\\d]+").tail;
+        var outInt=out.map(x=>x.toInt);
+        System.out.println(outInt);
+        // val array2D = Array.ofDim[Int](rows.length, rows.length)
+
+        // for ((rowString, rowIndex) <- rows.zipWithIndex) {
+        //   val numbers = numberPattern.findAllIn(rowString).toArray
+        //   for ((numString, colIndex) <- numbers.zipWithIndex) {
+        //     array2D(rowIndex)(colIndex) = numString.toInt
+        //   }
+        // }
+
+        outInt
+      }
+
+      def parseQArrayToState(input: Array[Int]): Seq[Array[Int]] = {
+        
+        val array2D = Array.ofDim[Int](input.length, input.length)
+
+        for(i<-0 until input.length){
+          for(j<-0 until input.length){
+             if(j+1==input(i)){
+              array2D(i)(j)=1;
+             }else{
+              array2D(i)(j)=0;
+
+             }
+          }
+        
+        }
+        System.out.println("Solution");
+        for(i<-0 until input.length){
+          for(j<-0 until input.length){
+             if(j+1==input(i)){
+              array2D(i)(j)=1;
+             }else{
+              array2D(i)(j)=0;
+
+             }
+        System.out.print(array2D(i)(j));
+        System.out.print(",");
+          }
+          System.out.println();
+        }
+
+        array2D
+      }
+
+      def prolSuduko(board: Seq[Array[Int]]): Seq[Array[Int]] = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = stringfy(board, 9)
+        //def stringfy(arg: Seq[Array[Int]], N: Int): String = {}
+        var qs =""
+        
+        val q = new Query( "Rows = " + str + ",sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+        qs = q.oneSolution().toString()          
+             
+        parseStringToArray(qs)
+        //def parseStringToArray(input: String): Array[Array[Int]] = {}
+      }
+
+      def prolQueens(board: Seq[Array[Int]]): Seq[Array[Int]] = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = toQArray(board, 8)
+        //def stringfy(arg: Seq[Array[Int]], N: Int): String = {}
+        var qs =""
+        System.out.println("State");
+        for(i<-0 until board.length){
+          for(j<-0 until board.length){
+             
+        System.out.print(board(i)(j));
+        System.out.print(",");
+          }
+          System.out.println();
+        }
+        val q = new Query( "Rows = " + str + ",queens(Rows),label(Rows),maplist(portray_clause, Rows).")
+        qs = q.oneSolution().toString()
+        System.out.println(qs);   
+        parseQArrayToState(parseStringToQArray(qs));    
+        // board
+
+
+        //def parseStringToArray(input: String): Array[Array[Int]] = {}
+      }
+
+      def copyInto(map1:Seq[Array[Int]],map2:Seq[Array[Int]])={
+        for(i<-0 until map1.length){
+                for(j<-0 until map1.length){
+                  map1(i)(j)=map2(i)(j);
+                }
+              }
+      }
+
     new MainFrame(null) {
       title = gameName
 
@@ -174,7 +343,206 @@ object GameEngine {
 
             contents += Swing.HStrut(50)
             contents += turnlabel
-            contents += Swing.HStrut(100)
+
+            gameName match {
+              case "Chess"|"XO"|"Connect4"|"Checkers" => {
+                contents += Swing.HStrut(100)
+              }
+              case "Suduko" =>{
+                contents += Button("Solve"){
+                  try{
+                    val solved = prolSuduko(state)
+                    copyInto(state,solved)
+                    if(oldframe != null)oldframe.dispose()
+                    oldframe = Drawer(state);
+
+                  }
+                  catch{
+                    Throwable =>{
+                    turnlabel.foreground = Color.RED
+                    turnlabel.text = "Not valid"
+                    }
+                  }
+                }
+              }
+              case "8Queens" =>{
+                contents += Button("Solve"){
+                  try{
+                    val solved = prolQueens(state)
+                    copyInto(state,solved)
+                    if(oldframe != null)oldframe.dispose()
+                    oldframe = Drawer(state);
+
+                  }
+                  catch{
+                    Throwable =>{
+                    turnlabel.foreground = Color.RED
+                    turnlabel.text = "Not valid"
+                    }
+                  }
+                }
+              }
+            }
+
+
+
+
+            var turn = 0
+            //input handeling
+            var oldframe:MainFrame = Drawer(state)
+            contents += Button("Do Action!!") { 
+                var s1 = inputField1.text
+                var s2 = inputField2.text
+                var input:Array[String] = Array(s1,s2)
+                println(input(0),input(1)) 
+
+                if(Controller(state,input,turn)){
+                  turnlabel.foreground = new Color(0x013220)
+
+                  turn+=1
+                  turn = turn%2  
+
+                  if(turn%2 == 0)
+                  {
+                    turnlabel.text = gameName match{
+                      case "Chess"|"Checkers" => "Black's  Turn"
+                      case "XO" | "Connect4" => "Red Player's Turn"
+                      case "Suduko"|"8Queens" => ""
+                    }
+                  } 
+                  else 
+                  {
+                    turnlabel.text = gameName match{
+                      case "Chess"|"Checkers" => "White's  Turn"
+                      case "XO" | "Connect4" => "Yellow Player's Turn"
+                      case "Suduko"|"8Queens" => ""
+                    }
+                  }
+                  //Reset Input Fields After each Move
+                  inputField1.text =""
+                  inputField2.text =""
+                  
+                  if(oldframe != null)oldframe.dispose()
+
+                  oldframe = Drawer(state);
+                }
+                else{
+                  turnlabel.foreground = Color.RED
+                  turnlabel.text = "Not valid"
+                }       
+            }
+          }
+
+          background = new Color(0xb1e9fe)
+          maximumSize = new Dimension(700,80)
+          preferredSize = new Dimension(700,80)
+          border = Swing.TitledBorder(Swing.EtchedBorder(Swing.Lowered), "Input")
+        } 
+      }
+      
+      bounds = new Rectangle(700, 120)
+      centerOnScreen()
+      resizable = false
+      visible = true
+    }
+  }
+
+  def abstractEngine_no_solver[T](
+    gameName:String,
+    Drawer: (Seq[T]) => MainFrame,
+    Controller: (Seq[T],Array[String],Int) => Boolean,
+    state:Seq[T]
+  ): Unit = 
+  {
+
+      
+    new MainFrame(null) {
+      title = gameName
+
+      //GUI
+      contents = new BoxPanel(Orientation.Vertical) {
+
+        contents += new FlowPanel{
+
+          //text panel
+          contents += new BoxPanel(Orientation.NoOrientation){
+            maximumSize = new Dimension(670,20)
+            preferredSize = new Dimension(670,20)
+            background = new Color(0xb1e9fe)
+
+            var str: String = gameName match{
+              case "Chess"|"8Queens"|"Checkers" => "Start Position"
+              case "XO" | "Connect4" |"Suduko" => "Position"
+            }
+
+            contents += Swing.HStrut(20)
+            val firstLabel = new Label(str){font = new Font("Arial", 1, 12)}
+            firstLabel.maximumSize = new Dimension(100,20)
+            firstLabel.horizontalAlignment = Alignment.Left
+            contents += firstLabel
+            contents += Swing.HStrut(20)
+
+            gameName match {
+              case "Chess"|"Checkers" => {
+                contents += new Label("end Position"){font = new Font("Arial", 1, 12)}
+              }
+              case "Suduko" => {
+                contents += new Label("value"){font = new Font("Arial", 1, 12)}
+              }
+              case "8Queens"|"XO" | "Connect4" =>{}
+            }
+
+          }
+          
+          //input panel
+          contents += new BoxPanel(Orientation.NoOrientation){
+            maximumSize = new Dimension(670,20)
+            preferredSize = new Dimension(670,20)
+            background = new Color(0xb1e9fe)
+
+            var txt = gameName match{
+              case "Chess"|"Checkers" => "Black's  Turn"
+              case "XO" | "Connect4" => "Red Player's Turn"
+              case "Suduko"|"8Queens" =>""
+            }
+
+            var inputField1 = new TextField("")
+            var inputField2 = new TextField("")
+            var turnlabel = new Label(txt)
+            //Adjust Size
+            inputField1.maximumSize = new Dimension(100,30)
+            inputField2.maximumSize = new Dimension(100,30)
+            //Adjust Font
+            inputField1.font = new Font("Arial", 0, 15)
+            inputField2.font = new Font("Arial", 0, 15)
+            //label adj
+            turnlabel.maximumSize = new Dimension(200,20)
+            turnlabel.font = new Font("Arial", 1, 15)
+            turnlabel.foreground = new Color(0x013220)
+            
+            contents += Swing.HStrut(20)
+            contents += inputField1
+            contents += Swing.HStrut(20)
+            
+            gameName match {
+              case "Chess"|"Suduko"|"Checkers" => {
+                contents += inputField2
+              }
+              case "8Queens"|"XO"|"Connect4" =>{
+                contents += Swing.HStrut(100)
+              }
+            }
+
+            contents += Swing.HStrut(50)
+            contents += turnlabel
+
+            gameName match {
+              case "Chess"|"XO"|"Connect4"|"Checkers" => {
+                contents += Swing.HStrut(100)
+              }
+            }
+
+
 
             var turn = 0
             //input handeling
@@ -964,7 +1332,7 @@ object GameEngine {
         board
       }
 
-      val sudukoBoard = generateBoard(/*add number here for emptyspaces or leave empty for random*/)
+      var sudukoBoard = generateBoard(/*add number here for emptyspaces or leave empty for random*/)
 
       //Chess Array
       var chessImageArrayW = Array((1,"RookWhite"),(2,"KnightWhite"),(3,"BishopWhite"),(4,"QueenWhite"),
@@ -1003,8 +1371,89 @@ object GameEngine {
         Array(0,-1,0,-1,0,-1,0,-1)
       )  
 
-      var Queens = Array.ofDim[Int](8,8)          
-                
+      var Queens = Array.ofDim[Int](8,8)  
+/*
+      def stringfy(arg: Array[Array[Int]], N: Int): String = {
+        var out: String = "[";
+        for (i <- 0 to N - 1) {
+          out += "["
+          for (j <- 0 to N - 1) {
+            if (arg(i)(j) == 0) {
+              out += "_";
+            } else {
+              if (arg(i)(j) >= 10)
+                out += (arg(i)(j) / 10).toString();
+              else
+                out += arg(i)(j).toString();
+            }
+
+            if (j != N - 1) {
+              out += ",";
+            }
+          }
+          out += "]"
+          if (i != N - 1) {
+            out += ",";
+          }
+        }
+        out += "]"
+        return out;
+      }
+
+      def parseStringToArray(input: String): Array[Array[Int]] = {
+        val rowPattern = "\\[(.*?)\\]".r
+        val numberPattern = "\\d+".r
+
+        val rows = rowPattern.findAllIn(input).toArray
+        val array2D = Array.ofDim[Int](rows.length, rows.length)
+
+        for ((rowString, rowIndex) <- rows.zipWithIndex) {
+          val numbers = numberPattern.findAllIn(rowString).toArray
+          for ((numString, colIndex) <- numbers.zipWithIndex) {
+            array2D(rowIndex)(colIndex) = numString.toInt
+          }
+        }
+
+        array2D
+      }
+
+      def prolSuduko(board: Array[Array[Int]]): Unit = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = stringfy(board, 9)
+        try {
+          val q = new Query( "Rows = " + str + ",sudoku(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+          val qs = q.oneSolution().toString()
+          var newboard = parseStringToArray(qs)
+          sudukoBoard = newboard
+        }
+        catch ( Throwable => println("no sol") )        
+      }
+
+      def prolQueens(): Unit = {
+        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
+        System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
+        val str = "Rows = [[_,_,1,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,_,_,_,_,_]," +
+                          "[_,_,_,1,_,_,_,_]],"
+        try {
+          val q = new Query( str + "queens(Rows),maplist(label, Rows),maplist(portray_clause, Rows).")
+          val qs = q.oneSolution()
+          println(qs.toString())
+        }
+        catch ( 
+          Throwable => println("no sol") 
+          )
+        println(",,,,,,,,,,,,,,,,,,,,,,,,,,")      
+      }*/
+
+      //prolQueens()
+      //prolSuduko(sudukoBoard) 
 
       //drawing the menu
       contents = new BoxPanel(Orientation.Vertical) {
@@ -1057,9 +1506,9 @@ object GameEngine {
               input = Games(j)
 
               input match {
-                case "Chess"    => abstractEngine(input,Chess_Drawer,Chess_Controller,chessBoard)
+                case "Chess"    => abstractEngine_no_solver(input,Chess_Drawer,Chess_Controller,chessBoard)
                 case "8Queens"  => abstractEngine(input,Queens_Drawer,Queens_Controller,Queens)
-                case "Connect4" => abstractEngine(input,Connect4_Drawer,Connect4_Controller,connect4Array)
+                case "Connect4" => abstractEngine_no_solver(input,Connect4_Drawer,Connect4_Controller,connect4Array)
                 case "XO"       => abstractEngine(input,XO_Drawer,XO_Controller,XoArray)
                 case "Suduko"   => abstractEngine(input,Suduko_Drawer,Suduko_Controller,sudukoBoard)
                 case "Checkers" => abstractEngine(input,Checkers_Drawer,Checkers_Controller,checkersBoard)
