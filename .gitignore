@@ -5,3 +5,5 @@ Scala/scalaengine/.metals/metals.lock.db
 # for java script
 
 node_modules/
+Scala/scalaengine/project/project/project/target/config-classes/*
+Scala/scalaengine/project/project/target/*

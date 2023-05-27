@@ -15,7 +15,6 @@ object GameEngine {
 
   def AbstractDrawer (bgColor: Color,rows: Int,cols: Int,color1: Color,color2: Color,shape: String,g: Graphics2D) = {
 
-    
     val width = 700
     val height = 600
 
@@ -127,7 +126,7 @@ object GameEngine {
           breakable{
           for (j <- 0 to N - 1){
             if (arg(i)(j) != 0) {
-              out += "1";
+              out += (j+1).toString();
               break
             } else if (j==N-1){
               out += "_";
@@ -212,7 +211,7 @@ object GameEngine {
       }
 
       def prolSuduko(board: Seq[Array[Int]]): Seq[Array[Int]] = {
-        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        val q1 = new Query("consult('C:/Users/acer/Documents/GitHub/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
         System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
         val str = stringfy(board, 9)
         //def stringfy(arg: Seq[Array[Int]], N: Int): String = {}
@@ -226,7 +225,7 @@ object GameEngine {
       }
 
       def prolQueens(board: Seq[Array[Int]]): Seq[Array[Int]] = {
-        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
+        val q1 = new Query("consult('C:/Users/acer/Documents/GitHub/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
         System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
         val str = toQArray(board, 8)
         //def stringfy(arg: Seq[Array[Int]], N: Int): String = {}
@@ -343,7 +342,7 @@ object GameEngine {
 
             contents += Swing.HStrut(50)
             contents += turnlabel
-
+            var solution=false;
             gameName match {
               case "Chess"|"XO"|"Connect4"|"Checkers" => {
                 contents += Swing.HStrut(100)
@@ -355,6 +354,7 @@ object GameEngine {
                     copyInto(state,solved)
                     if(oldframe != null)oldframe.dispose()
                     oldframe = Drawer(state);
+                    solution=true;
 
                   }
                   catch{
@@ -372,6 +372,7 @@ object GameEngine {
                     copyInto(state,solved)
                     if(oldframe != null)oldframe.dispose()
                     oldframe = Drawer(state);
+                    solution=true;
 
                   }
                   catch{
@@ -391,6 +392,9 @@ object GameEngine {
             //input handeling
             var oldframe:MainFrame = Drawer(state)
             contents += Button("Do Action!!") { 
+                if(!solution){
+
+                
                 var s1 = inputField1.text
                 var s2 = inputField2.text
                 var input:Array[String] = Array(s1,s2)
@@ -429,7 +433,11 @@ object GameEngine {
                 else{
                   turnlabel.foreground = Color.RED
                   turnlabel.text = "Not valid"
-                }       
+                }  
+              }else{
+                turnlabel.foreground = Color.RED
+                  turnlabel.text = "Not valid"
+              }     
             }
           }
 
@@ -1418,7 +1426,7 @@ object GameEngine {
       }
 
       def prolSuduko(board: Array[Array[Int]]): Unit = {
-        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
+        val q1 = new Query("consult('C:/Users/acer/Documents/GitHub/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/suduko.pl')")
         System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
         val str = stringfy(board, 9)
         try {
@@ -1431,7 +1439,7 @@ object GameEngine {
       }
 
       def prolQueens(): Unit = {
-        val q1 = new Query("consult('E:/DK files/21011054/4th semester/paradigms/para legit/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
+        val q1 = new Query("consult('C:/Users/acer/Documents/GitHub/Game-Engine/Scala/scalaengine/src/main/resources/Prolog/8queens.pl')")
         System.out.println("consult "+ (if(q1.hasSolution) "succeed" else "failed")) 
         val str = "Rows = [[_,_,1,_,_,_,_,_]," +
                           "[_,_,_,_,_,_,_,_]," +
