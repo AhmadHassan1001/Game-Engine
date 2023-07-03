@@ -31,4 +31,16 @@ The engine will NOT
 This phase focus on developing a solver in the Scala engine for two specific games - Sudoku and 8-Queens. These solvers will be implemented using Prolog logical programming language. When playing either of these games, the user will have the option to click on a button that will solve the game in its current state. If the game is unsolvable, the solver will report that there is no solution available.
 
 ---------------
-
+## Installation
+- Javascript Installation:
+  - Open repo on vscode 
+  - [Install live server extension](https://www.geeksforgeeks.org/how-to-enable-live-server-on-visual-studio-code/)
+  - Open `javascript\index.html`
+  - Click `Go Live`
+ 
+- Scala Installation:
+  - Open **`Scala\scalaengine`** on vscode as main directory
+  - [Install metals extension](https://scalameta.org/metals/docs/editors/vscode/)
+  - In metals extension click "import build"
+  - In metals extension click "Cascade compile"
+  - In `src\main\scala\Main.scala` click run (at the top of the object `GameEngine`)
