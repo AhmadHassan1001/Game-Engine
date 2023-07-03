@@ -44,3 +44,11 @@ This phase focus on developing a solver in the Scala engine for two specific gam
   - In metals extension click "import build"
   - In metals extension click "Cascade compile"
   - In `src\main\scala\Main.scala` click run (at the top of the object `GameEngine`)
+
+## Key learnings
+- Inheritance
+- Polymorphism
+- Encapsulation
+- Abstraction
+- Higher Order Functions
+- Logical Programming Optmizations
